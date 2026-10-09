@@ -20,9 +20,13 @@ Rankings will be done through unique style of weights and other various factors 
 
 ## Data Sources
 We use a blend of api's for our data which can be found below,
+
 `Steam`
+
 `Marvel Rivals`
+
 `WoW`
+
 `Seige`
 
 ## Tech Stack
