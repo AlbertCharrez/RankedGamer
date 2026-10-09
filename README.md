@@ -1,5 +1,5 @@
 # Gamer Ranked
-This product applies to all gamers who wish to be ranked against anyone on their favorite games including but not limited to Marvel Rivals, Tom Clancy's Rainbow Six Siege, and World of Warcraft.
+This product applies to all gamers who wish to be ranked against anyone on their favorite games including but not limited to Marvel Rivals, CS2, and World of Warcraft.
 
 ## Features
 1. Player vs. All Rankings
@@ -21,13 +21,11 @@ Rankings will be done through unique style of weights and other various factors 
 ## Data Sources
 We use a blend of api's for our data which can be found below,
 
-`Steam`
+`Steam: Steam Web API Key`
 
-`Marvel Rivals`
+`Marvel Rivals: MarvelRivalsAPI.com`
 
-`WoW`
-
-`Seige`
+`WoW: Battle.net `
 
 ## Tech Stack
 
@@ -49,7 +47,7 @@ We use a blend of api's for our data which can be found below,
 ## Architecture
 
 ```
- Game APIs (Riot, Steam, Lichess, ...)
+ Game APIs (Rivals, Steam, WOW, ...)
             │
             ▼
    Celery workers ──► Rating engine (openskill)
@@ -70,15 +68,6 @@ We use a blend of api's for our data which can be found below,
 4. **Cross-game ranking:** Ratings are normalized to a percentile within each game before they're combined into the overall leaderboard. See [docs/ranking.md](docs/ranking.md).
 5. **Serving:** The FastAPI backend serves data to the Next.js frontend, which renders pages server-side for speed and SEO.
 
-## Supported Games
-
-| Game | Data source | Status |
-|---|---|---|
-| League of Legends | Riot Games API | ✅ Live |
-| Chess | Lichess API | ✅ Live |
-| Counter-Strike 2 | Steam Web API | 🚧 In progress |
-
-Want support for another game? [Open an issue](../../issues/new) with the game name and any public API it has.
 ## Project Structure
 ## Privacy and Data
 ## License
