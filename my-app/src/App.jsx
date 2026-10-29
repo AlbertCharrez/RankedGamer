@@ -1,32 +1,35 @@
 import { useState } from "react";
 import HomeTab from "./Tabs/HomeTab";
-import CS2Tab from "./Tabs/CS2Tab";
 import DeadlockTab from "./Tabs/DeadlockTab";
 import MarvelRivalsTab from "./Tabs/MarvelRivalsTab";
+import CS2Tab from "./Tabs/CS2Tab";
 
-function App() {
+export default function App() {
   const [activeTab, setActiveTab] = useState("home");
+
+  // id -> label shown on the tab button + component to render
+  const tabs = {
+    home:         { label: "Home",          content: <HomeTab onOpenTab={setActiveTab} /> },
+    deadlock:     { label: "Deadlock",      content: <DeadlockTab /> },
+    marvelrivals: { label: "Marvel Rivals", content: <MarvelRivalsTab /> },
+    cs2:          { label: "CS2",           content: <CS2Tab /> },
+  };
 
   return (
     <div style={{ padding: 24 }}>
-      <nav style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-        {["home", "cs2", "deadlock", "marvel rivals"].map((tab) => (
+      <nav className="tab-bar">
+        {Object.entries(tabs).map(([id, tab]) => (
           <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            style={{ fontWeight: activeTab === tab ? "bold" : "normal" }}
+            key={id}
+            onClick={() => setActiveTab(id)}
+            className={activeTab === id ? "tab active" : "tab"}
           >
-            {tab[0].toUpperCase() + tab.slice(1)}
+            {tab.label}
           </button>
         ))}
       </nav>
 
-      {activeTab === "home" && <HomeTab />}
-      {activeTab === "cs2" && <CS2Tab />}
-      {activeTab === "deadlock" && <DeadlockTab />}
-      {activeTab === "marvel rivals" && <MarvelRivalsTab />}
+      {tabs[activeTab].content}
     </div>
   );
 }
-
-export default App;

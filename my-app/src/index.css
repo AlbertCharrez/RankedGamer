@@ -119,6 +119,7 @@ code {
   padding: 0 16px;
 }
 
+/* Every card the same size */
 .game-card {
   display: flex;
   flex-direction: column;
@@ -134,6 +135,7 @@ code {
   border-color: var(--accent);
 }
 
+/* Images all the same shape, whatever their original size */
 .game-card img {
   width: 100%;
   aspect-ratio: 16 / 9;
