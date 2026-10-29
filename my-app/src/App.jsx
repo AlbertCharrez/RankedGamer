@@ -1,4 +1,5 @@
 import { useState } from "react";
+import HomeTab from "./Tabs/HomeTab";
 import CS2Tab from "./Tabs/CS2Tab";
 import DeadlockTab from "./Tabs/DeadlockTab";
 import MarvelRivalsTab from "./Tabs/MarvelRivalsTab";
@@ -9,7 +10,7 @@ function App() {
   return (
     <div style={{ padding: 24 }}>
       <nav style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-        {["cs2", "deadlock", "marvel rivals"].map((tab) => (
+        {["home", "cs2", "deadlock", "marvel rivals"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -20,6 +21,7 @@ function App() {
         ))}
       </nav>
 
+      {activeTab === "home" && <HomeTab />}
       {activeTab === "cs2" && <CS2Tab />}
       {activeTab === "deadlock" && <DeadlockTab />}
       {activeTab === "marvel rivals" && <MarvelRivalsTab />}
