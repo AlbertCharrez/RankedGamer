@@ -1,12 +1,11 @@
-import {useState} from 'react';
+import PlayerSearch from "../Components/PlayerSearch";
 
-function ContactTab() {
+export default function DeadlockTab() {
   return (
     <div>
-        <h2> Contact </h2>
-        <p> Welcome to the contact tab!</p>
+        <h2> Deadlock </h2>
+        <PlayerSearch />
+        <p> Welcome to the deadlock tab!</p>
     </div>
   );
 }
-
-export default ContactTab;
