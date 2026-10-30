@@ -5,8 +5,8 @@ import MarvelRivalsTab from "./Tabs/MarvelRivalsTab";
 import CS2Tab from "./Tabs/CS2Tab";
 import ProfileTab from "./Tabs/ProfileTab";
 import LoginModal from "./Components/LoginModal";
+import SupportModal from "./Components/SupportModal";
 
-// remember the user between visits (browser only)
 const loadUser = () => {
   try { return JSON.parse(localStorage.getItem("rg-user")); } catch { return null; }
 };
@@ -20,6 +20,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState("home");
   const [user, setUser] = useState(loadUser);
   const [showLogin, setShowLogin] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
 
   const handleSave = (u) => {
     setUser(u);
@@ -54,7 +55,7 @@ export default function App() {
     );
 
   return (
-    <div style={{ padding: 30 }}>
+    <div className="app">
       <nav className="tab-bar">
         <div className="tab-group">
           {Object.entries(tabs).map(([id, tab]) => (
@@ -83,7 +84,14 @@ export default function App() {
         )}
       </nav>
 
-      {content}
+      <main className="app-content">{content}</main>
+
+      <footer className="site-footer">
+        <span>© {new Date().getFullYear()} RankedGamer</span>
+        <button className="btn-secondary" onClick={() => setShowSupport(true)}>
+          Need help? Contact support
+        </button>
+      </footer>
 
       {showLogin && (
         <LoginModal
@@ -91,6 +99,10 @@ export default function App() {
           onSave={handleSave}
           onClose={() => setShowLogin(false)}
         />
+      )}
+
+      {showSupport && (
+        <SupportModal user={user} onClose={() => setShowSupport(false)} />
       )}
     </div>
   );
