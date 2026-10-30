@@ -125,7 +125,7 @@ code {
   flex-direction: column;
   border-radius: 10px;
   overflow: hidden;
-  background: #161922;
+  background: #262a36;
   border: 2px solid transparent;
   transition: transform 0.15s, border-color 0.15s;
 }
