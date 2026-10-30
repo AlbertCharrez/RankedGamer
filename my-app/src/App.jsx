@@ -7,7 +7,6 @@ import CS2Tab from "./Tabs/CS2Tab";
 export default function App() {
   const [activeTab, setActiveTab] = useState("home");
 
-  // id -> label shown on the tab button + component to render
   const tabs = {
     home:         { label: "Home",          content: <HomeTab onOpenTab={setActiveTab} /> },
     deadlock:     { label: "Deadlock",      content: <DeadlockTab /> },
@@ -16,7 +15,7 @@ export default function App() {
   };
 
   return (
-    <div style={{ padding: 24 }}>
+    <div style={{ padding: 30 }}>
       <nav className="tab-bar">
         {Object.entries(tabs).map(([id, tab]) => (
           <button

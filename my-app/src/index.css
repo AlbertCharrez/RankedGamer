@@ -150,3 +150,28 @@ code {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.tab-bar {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;   /* wraps onto a second line on narrow screens */
+  gap: 8px;          /* space between buttons */
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #262a36;
+}
+
+.tab {
+  display: inline-block;
+  width: auto;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #9aa0ad;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.tab:hover  { background: #222634; color: #fff; }
+.tab.active { background: #222634; color: #fff; font-weight: 600; }
