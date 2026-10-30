@@ -232,3 +232,17 @@ code {
 .profile-header h1 { margin: 0; }
 .profile-header p { margin: 4px 0 0; color: #9aa0ad; }
 .profile-actions { margin-left: auto; display: flex; gap: 8px; }
+
+.step-label {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: #9aa0ad;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.form-error {
+  margin: -4px 0 16px;
+  color: #ff6b6b;
+  font-size: 14px;
+}
