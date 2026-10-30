@@ -20,4 +20,4 @@ export default function HomeTab({ onOpenTab }) {
       </section>
     </div>
   );
-}
+} 
