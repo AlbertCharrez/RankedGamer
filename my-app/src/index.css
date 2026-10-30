@@ -153,13 +153,15 @@ code {
 
 .tab-bar {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;   /* wraps onto a second line on narrow screens */
-  gap: 8px;          /* space between buttons */
+  justify-content: space-between;  /* tabs left, login right */
+  align-items: center;
+  gap: 8px;
   margin-bottom: 24px;
   padding-bottom: 12px;
   border-bottom: 1px solid #262a36;
 }
+
+.tab-group { display: flex; flex-wrap: wrap; gap: 8px; }
 
 .tab {
   display: inline-block;
@@ -175,3 +177,58 @@ code {
 
 .tab:hover  { background: #222634; color: #fff; }
 .tab.active { background: #222634; color: #fff; font-weight: 600; }
+
+/* buttons */
+.btn-primary, .btn-secondary {
+  padding: 8px 16px; border: none; border-radius: 6px;
+  font-size: 15px; cursor: pointer; font-weight: 600;
+}
+.btn-primary { background: #ff4655; color: #fff; }
+.btn-primary:hover { background: #e53b4a; }
+.btn-secondary { background: #222634; color: #e6e6e6; }
+.btn-secondary:hover { background: #2c3142; }
+
+/* top-right profile button */
+.profile-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 12px 6px 6px; border: none; border-radius: 999px;
+  background: #222634; color: #e6e6e6; font-size: 15px; cursor: pointer;
+}
+.profile-btn:hover, .profile-btn.active { background: #2c3142; }
+
+.avatar {
+  display: grid; place-items: center;
+  width: 64px; height: 64px; border-radius: 50%;
+  background: #ff4655; color: #fff; font-size: 28px; font-weight: 700;
+}
+.avatar.small { width: 28px; height: 28px; font-size: 14px; }
+
+/* modal */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6);
+  display: grid; place-items: center; z-index: 100; padding: 16px;
+}
+.modal {
+  background: #161922; border: 1px solid #262a36; border-radius: 12px;
+  padding: 24px; width: 100%; max-width: 400px;
+}
+.modal h2 { margin-top: 0; }
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.field input {
+  padding: 10px; border-radius: 6px; border: 1px solid #262a36;
+  background: #0f1117; color: #e6e6e6; font-size: 15px;
+}
+.field-label { margin: 0 0 8px; }
+.game-checks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.game-check {
+  display: flex; align-items: center; gap: 10px; padding: 10px;
+  border-radius: 6px; background: #0f1117; border: 1px solid #262a36; cursor: pointer;
+}
+.game-check.checked { border-color: #ff4655; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+/* profile page */
+.profile-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+.profile-header h1 { margin: 0; }
+.profile-header p { margin: 4px 0 0; color: #9aa0ad; }
+.profile-actions { margin-left: auto; display: flex; gap: 8px; }
