@@ -139,6 +139,7 @@ a { color: inherit; text-decoration: none; }
   cursor: pointer;
 }
 .link-btn:hover { text-decoration: underline; }
+.link-btn.small { font-size: 13px; }
 
 /* ================= Profile button + avatar ================= */
 .profile-btn {
@@ -169,6 +170,9 @@ a { color: inherit; text-decoration: none; }
   flex-shrink: 0;
 }
 .avatar.small { width: 28px; height: 28px; font-size: 14px; }
+
+/* uploaded pictures fill the circle without stretching */
+img.avatar { object-fit: cover; }
 
 /* ================= Home hero: tagline left, title + search right ================= */
 .hero {
@@ -377,6 +381,20 @@ a { color: inherit; text-decoration: none; }
   text-align: center;
   font-size: 14px;
   color: var(--text-muted);
+}
+
+/* ================= Edit profile: picture picker ================= */
+.avatar-picker {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.avatar-picker-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
 }
 
 /* ================= Profile page ================= */
