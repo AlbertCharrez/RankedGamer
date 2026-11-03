@@ -5,6 +5,8 @@ import MarvelRivalsTab from "./Tabs/MarvelRivalsTab";
 import CS2Tab from "./Tabs/CS2Tab";
 import ProfileTab from "./Tabs/ProfileTab";
 import LoginModal from "./Components/LoginModal";
+import SignupModal from "./Components/SignupModal";
+import EditGamesModal from "./Components/EditGamesModal";
 import SupportModal from "./Components/SupportModal";
 
 const loadUser = () => {
@@ -19,13 +21,15 @@ const saveUser = (u) => {
 export default function App() {
   const [activeTab, setActiveTab] = useState("home");
   const [user, setUser] = useState(loadUser);
-  const [showLogin, setShowLogin] = useState(false);
-  const [showSupport, setShowSupport] = useState(false);
+  const [modal, setModal] = useState(null); // null | "login" | "signup" | "edit" | "support"
 
+  const closeModal = () => setModal(null);
+
+  // logging in, signing up, and editing games all end the same way
   const handleSave = (u) => {
     setUser(u);
     saveUser(u);
-    setShowLogin(false);
+    setModal(null);
     setActiveTab("profile");
   };
 
@@ -47,7 +51,7 @@ export default function App() {
       <ProfileTab
         user={user}
         onOpenTab={setActiveTab}
-        onEdit={() => setShowLogin(true)}
+        onEdit={() => setModal("edit")}
         onLogout={handleLogout}
       />
     ) : (
@@ -78,32 +82,47 @@ export default function App() {
             {user.name}
           </button>
         ) : (
-          <button className="btn-primary" onClick={() => setShowLogin(true)}>
-            Log in
-          </button>
+          <div className="auth-buttons">
+            <button className="btn-primary" onClick={() => setModal("login")}>
+              Log in
+            </button>
+            <button className="btn-signup" onClick={() => setModal("signup")}>
+              Sign up
+            </button>
+          </div>
         )}
       </nav>
 
       <main className="app-content">{content}</main>
 
       <footer className="site-footer">
-        <span>© {new Date().getFullYear()} RankedGamer</span>
-        <button className="btn-secondary" onClick={() => setShowSupport(true)}>
+        <span> RankedGamer @ ECU </span>
+        <button className="btn-secondary" onClick={() => setModal("support")}>
           Need help? Contact support
         </button>
       </footer>
 
-      {showLogin && (
+      {modal === "login" && (
         <LoginModal
-          initialUser={user}
-          onSave={handleSave}
-          onClose={() => setShowLogin(false)}
+          onLogin={handleSave}
+          onClose={closeModal}
+          onSwitchToSignup={() => setModal("signup")}
         />
       )}
 
-      {showSupport && (
-        <SupportModal user={user} onClose={() => setShowSupport(false)} />
+      {modal === "signup" && (
+        <SignupModal
+          onSignup={handleSave}
+          onClose={closeModal}
+          onSwitchToLogin={() => setModal("login")}
+        />
       )}
+
+      {modal === "edit" && user && (
+        <EditGamesModal user={user} onSave={handleSave} onClose={closeModal} />
+      )}
+
+      {modal === "support" && <SupportModal user={user} onClose={closeModal} />}
     </div>
   );
 }
