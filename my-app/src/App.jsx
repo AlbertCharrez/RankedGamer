@@ -6,8 +6,9 @@ import CS2Tab from "./Tabs/CS2Tab";
 import ProfileTab from "./Tabs/ProfileTab";
 import LoginModal from "./Components/LoginModal";
 import SignupModal from "./Components/SignupModal";
-import EditGamesModal from "./Components/EditGamesModal";
+import EditProfileModal from "./Components/EditProfileModal";
 import SupportModal from "./Components/SupportModal";
+import Avatar from "./Components/Avatar";
 
 const loadUser = () => {
   try { return JSON.parse(localStorage.getItem("rg-user")); } catch { return null; }
@@ -25,7 +26,7 @@ export default function App() {
 
   const closeModal = () => setModal(null);
 
-  // logging in, signing up, and editing games all end the same way
+  // logging in, signing up, and editing the profile all end the same way
   const handleSave = (u) => {
     setUser(u);
     saveUser(u);
@@ -78,7 +79,7 @@ export default function App() {
             className={activeTab === "profile" ? "profile-btn active" : "profile-btn"}
             onClick={() => setActiveTab("profile")}
           >
-            <span className="avatar small">{user.name[0].toUpperCase()}</span>
+            <Avatar user={user} size="small" />
             {user.name}
           </button>
         ) : (
@@ -119,7 +120,7 @@ export default function App() {
       )}
 
       {modal === "edit" && user && (
-        <EditGamesModal user={user} onSave={handleSave} onClose={closeModal} />
+        <EditProfileModal user={user} onSave={handleSave} onClose={closeModal} />
       )}
 
       {modal === "support" && <SupportModal user={user} onClose={closeModal} />}

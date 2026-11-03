@@ -1,6 +1,6 @@
 import { useState } from "react";
 import SearchBubble from "./SearchBubble.jsx";
-import { searchAllPlayers } from "../Data/searchPlayers";
+import { searchAllPlayers } from "../Data/accounts";
 import { games } from "../Data/games";
 
 const gameInfo = (id) => games.find((g) => g.id === id) ?? { id, name: id, color: "#888" };
