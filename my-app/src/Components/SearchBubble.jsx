@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./SearchBubble.css";
 
-export default function SearchBubble({ onSearch }) {
+export default function SearchBubble({ onSearch, placeholder = "Search..."  }) {
   const [query, setQuery] = useState("");
   const [pending, setPending] = useState(false);
 
@@ -34,7 +34,7 @@ export default function SearchBubble({ onSearch }) {
 
       <input
         type="text"
-        placeholder={pending ? "Searching..." : "Search..."}
+        placeholder={pending ? "Searching..." : placeholder}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         disabled={pending}

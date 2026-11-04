@@ -5,8 +5,11 @@ import MarvelRivalsTab from "./Tabs/MarvelRivalsTab";
 import CS2Tab from "./Tabs/CS2Tab";
 import ProfileTab from "./Tabs/ProfileTab";
 import LoginModal from "./Components/LoginModal";
+import SignupModal from "./Components/SignupModal";
+import EditProfileModal from "./Components/EditProfileModal";
+import SupportModal from "./Components/SupportModal";
+import Avatar from "./Components/Avatar";
 
-// remember the user between visits (browser only)
 const loadUser = () => {
   try { return JSON.parse(localStorage.getItem("rg-user")); } catch { return null; }
 };
@@ -19,12 +22,15 @@ const saveUser = (u) => {
 export default function App() {
   const [activeTab, setActiveTab] = useState("home");
   const [user, setUser] = useState(loadUser);
-  const [showLogin, setShowLogin] = useState(false);
+  const [modal, setModal] = useState(null); // null | "login" | "signup" | "edit" | "support"
 
+  const closeModal = () => setModal(null);
+
+  // logging in, signing up, and editing the profile all end the same way
   const handleSave = (u) => {
     setUser(u);
     saveUser(u);
-    setShowLogin(false);
+    setModal(null);
     setActiveTab("profile");
   };
 
@@ -46,7 +52,7 @@ export default function App() {
       <ProfileTab
         user={user}
         onOpenTab={setActiveTab}
-        onEdit={() => setShowLogin(true)}
+        onEdit={() => setModal("edit")}
         onLogout={handleLogout}
       />
     ) : (
@@ -54,7 +60,7 @@ export default function App() {
     );
 
   return (
-    <div style={{ padding: 30 }}>
+    <div className="app">
       <nav className="tab-bar">
         <div className="tab-group">
           {Object.entries(tabs).map(([id, tab]) => (
@@ -73,25 +79,51 @@ export default function App() {
             className={activeTab === "profile" ? "profile-btn active" : "profile-btn"}
             onClick={() => setActiveTab("profile")}
           >
-            <span className="avatar small">{user.name[0].toUpperCase()}</span>
+            <Avatar user={user} size="small" />
             {user.name}
           </button>
         ) : (
-          <button className="btn-primary" onClick={() => setShowLogin(true)}>
-            Log in
-          </button>
+          <div className="auth-buttons">
+            <button className="btn-primary" onClick={() => setModal("login")}>
+              Log in
+            </button>
+            <button className="btn-signup" onClick={() => setModal("signup")}>
+              Sign up
+            </button>
+          </div>
         )}
       </nav>
 
-      {content}
+      <main className="app-content">{content}</main>
 
-      {showLogin && (
+      <footer className="site-footer">
+        <span> RankedGamer @ ECU </span>
+        <button className="btn-secondary" onClick={() => setModal("support")}>
+          Need help? Contact support
+        </button>
+      </footer>
+
+      {modal === "login" && (
         <LoginModal
-          initialUser={user}
-          onSave={handleSave}
-          onClose={() => setShowLogin(false)}
+          onLogin={handleSave}
+          onClose={closeModal}
+          onSwitchToSignup={() => setModal("signup")}
         />
       )}
+
+      {modal === "signup" && (
+        <SignupModal
+          onSignup={handleSave}
+          onClose={closeModal}
+          onSwitchToLogin={() => setModal("login")}
+        />
+      )}
+
+      {modal === "edit" && user && (
+        <EditProfileModal user={user} onSave={handleSave} onClose={closeModal} />
+      )}
+
+      {modal === "support" && <SupportModal user={user} onClose={closeModal} />}
     </div>
   );
 }
