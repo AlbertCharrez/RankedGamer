@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import HomeTab from "./Tabs/HomeTab";
 import DeadlockTab from "./Tabs/DeadlockTab";
 import MarvelRivalsTab from "./Tabs/MarvelRivalsTab";
@@ -9,34 +9,39 @@ import SignupModal from "./Components/SignupModal";
 import EditProfileModal from "./Components/EditProfileModal";
 import SupportModal from "./Components/SupportModal";
 import Avatar from "./Components/Avatar";
-
-const loadUser = () => {
-  try { return JSON.parse(localStorage.getItem("rg-user")); } catch { return null; }
-};
-const saveUser = (u) => {
-  try {
-    u ? localStorage.setItem("rg-user", JSON.stringify(u)) : localStorage.removeItem("rg-user");
-  } catch {}
-};
+import { supabase } from "./lib/supabaseClient";
+import { fetchProfile, logOut } from "./Data/accounts";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState("home");
-  const [user, setUser] = useState(loadUser);
+  const [user, setUser] = useState(null);
+  const [authReady, setAuthReady] = useState(false); // avoids flashing "Log in" while checking
   const [modal, setModal] = useState(null); // null | "login" | "signup" | "edit" | "support"
+
+  // keep `user` in sync with Supabase (page load, login, logout, email confirmation)
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      // Supabase recommends not awaiting other calls inside this callback
+      setTimeout(async () => {
+        setUser(await fetchProfile(session?.user));
+        setAuthReady(true);
+      }, 0);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   const closeModal = () => setModal(null);
 
-  // logging in, signing up, and editing the profile all end the same way
+  // logging in and editing the profile end the same way
   const handleSave = (u) => {
     setUser(u);
-    saveUser(u);
     setModal(null);
     setActiveTab("profile");
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await logOut();
     setUser(null);
-    saveUser(null);
     setActiveTab("home");
   };
 
@@ -74,7 +79,7 @@ export default function App() {
           ))}
         </div>
 
-        {user ? (
+        {!authReady ? null : user ? (
           <button
             className={activeTab === "profile" ? "profile-btn active" : "profile-btn"}
             onClick={() => setActiveTab("profile")}
@@ -112,11 +117,7 @@ export default function App() {
       )}
 
       {modal === "signup" && (
-        <SignupModal
-          onSignup={handleSave}
-          onClose={closeModal}
-          onSwitchToLogin={() => setModal("login")}
-        />
+        <SignupModal onClose={closeModal} onSwitchToLogin={() => setModal("login")} />
       )}
 
       {modal === "edit" && user && (

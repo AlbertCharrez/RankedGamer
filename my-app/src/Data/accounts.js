@@ -1,30 +1,90 @@
-const ACCOUNTS_KEY = "rg-accounts";
+import { supabase } from "../lib/supabaseClient";
 
-export const loadAccounts = () => {
-  try { return JSON.parse(localStorage.getItem(ACCOUNTS_KEY)) ?? {}; } catch { return {}; }
-};
+// turn a profiles row into the user object the app already uses
+const toUser = (profile, email) =>
+  profile && {
+    id: profile.id,
+    name: profile.username,
+    games: profile.games ?? [],
+    avatar: profile.avatar_url ?? null,
+    email,
+  };
 
-export const saveAccounts = (accounts) => {
-  try { localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts)); } catch {}
-};
+// escape % and _ so they're matched literally in ilike searches
+const escapeLike = (s) => s.replace(/[\\%_]/g, "\\$&");
 
-export const accountKey = (name) => name.trim().toLowerCase(); // case-insensitive usernames
-
-export async function hashPassword(password) {
-  const data = new TextEncoder().encode(password);
-  const buf = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(buf))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
+export async function fetchProfile(authUser) {
+  if (!authUser) return null;
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", authUser.id)
+    .single();
+  if (error) {
+    console.error("Couldn't load profile:", error.message);
+    return null;
+  }
+  return toUser(data, authUser.email);
 }
 
-// update fields on a saved account, e.g. updateAccount("Albert", { avatar: "..." })
-export function updateAccount(name, changes) {
-  const accounts = loadAccounts();
-  const key = accountKey(name);
-  if (!accounts[key]) return;
-  accounts[key] = { ...accounts[key], ...changes };
-  saveAccounts(accounts);
+export async function isUsernameTaken(username) {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id")
+    .ilike("username", escapeLike(username))
+    .limit(1);
+  if (error) throw error;
+  return data.length > 0;
+}
+
+export async function signUp({ email, password, username, games }) {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { username, games }, // the database trigger turns this into a profile
+      emailRedirectTo: window.location.origin, // confirmation link comes back to this site
+    },
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function logIn(email, password) {
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) throw error;
+  return fetchProfile(data.user);
+}
+
+export async function logOut() {
+  await supabase.auth.signOut();
+}
+
+export async function updateProfile(id, { games, avatar }) {
+  const { error } = await supabase
+    .from("profiles")
+    .update({ games, avatar_url: avatar })
+    .eq("id", id);
+  if (error) throw error;
+}
+
+// search every account by username
+export async function searchAllPlayers(query) {
+  const q = query.trim();
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("username, games, avatar_url")
+    .ilike("username", `%${escapeLike(q)}%`)
+    .order("username")
+    .limit(20);
+  if (error) throw error;
+
+  return data.map((p) => ({
+    name: p.username,
+    avatar: p.avatar_url ?? null,
+    registered: true,
+    games: Object.fromEntries((p.games ?? []).map((id) => [id, {}])),
+  }));
 }
 
 // shrink an uploaded image to a small square and return it as a data URL
@@ -38,13 +98,8 @@ export function resizeImage(file, size = 128) {
       canvas.width = size;
       canvas.height = size;
       const ctx = canvas.getContext("2d");
-
-      // crop to a centered square, then scale down
       const side = Math.min(img.width, img.height);
-      const sx = (img.width - side) / 2;
-      const sy = (img.height - side) / 2;
-      ctx.drawImage(img, sx, sy, side, side, 0, 0, size, size);
-
+      ctx.drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, size, size);
       URL.revokeObjectURL(url);
       resolve(canvas.toDataURL("image/jpeg", 0.85));
     };
@@ -56,19 +111,4 @@ export function resizeImage(file, size = 128) {
 
     img.src = url;
   });
-}
-
-// search every registered account by username
-export async function searchAllPlayers(query) {
-  const q = query.trim().toLowerCase();
-
-  return Object.values(loadAccounts())
-    .filter((acc) => acc.name.toLowerCase().includes(q))
-    .map((acc) => ({
-      name: acc.name,
-      avatar: acc.avatar ?? null,
-      registered: true,
-      games: Object.fromEntries((acc.games ?? []).map((id) => [id, {}])),
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name));
 }
