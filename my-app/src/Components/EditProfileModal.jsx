@@ -1,23 +1,20 @@
 import { useRef, useState } from "react";
 import GamePicker from "./GamePicker";
 import Avatar from "./Avatar";
-import { updateAccount, resizeImage } from "../Data/accounts";
+import { updateProfile, resizeImage } from "../Data/accounts";
 
 export default function EditProfileModal({ user, onSave, onClose }) {
   const fileInput = useRef(null);
   const [avatar, setAvatar] = useState(user.avatar ?? null);
   const [picked, setPicked] = useState(user.games ?? []);
   const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
 
   const handleFile = async (e) => {
     const file = e.target.files?.[0];
-    e.target.value = ""; // allows picking the same file again
+    e.target.value = "";
     if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      setError("Please choose an image file.");
-      return;
-    }
+    if (!file.type.startsWith("image/")) return setError("Please choose an image file.");
 
     try {
       setError("");
@@ -27,10 +24,18 @@ export default function EditProfileModal({ user, onSave, onClose }) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    updateAccount(user.name, { avatar, games: picked });
-    onSave({ ...user, avatar, games: picked });
+    setBusy(true);
+    setError("");
+    try {
+      await updateProfile(user.id, { avatar, games: picked });
+      onSave({ ...user, avatar, games: picked });
+    } catch (err) {
+      setError(err.message || "Couldn't save your profile.");
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -53,14 +58,17 @@ export default function EditProfileModal({ user, onSave, onClose }) {
           </div>
           <input ref={fileInput} type="file" accept="image/*" onChange={handleFile} hidden />
         </div>
-        {error && <p className="form-error">{error}</p>}
 
         <p className="field-label">Games you play</p>
         <GamePicker picked={picked} setPicked={setPicked} />
 
+        {error && <p className="form-error">{error}</p>}
+
         <div className="modal-actions">
           <button type="button" className="btn-secondary" onClick={onClose}>Cancel</button>
-          <button type="submit" className="btn-primary">Save</button>
+          <button type="submit" className="btn-primary" disabled={busy}>
+            {busy ? "Saving..." : "Save"}
+          </button>
         </div>
       </form>
     </div>
