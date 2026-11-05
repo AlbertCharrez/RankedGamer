@@ -1,4 +1,8 @@
 import PlayerSearch from "../Components/PlayerSearch";
+import CS2CasualTab from "./CS2CasualTab";
+import CS2CompetitiveTab from "./CS2CompetitiveTab";
+import { useState } from 'react';
+
 
 export default function CS2Tab() {
   return (
