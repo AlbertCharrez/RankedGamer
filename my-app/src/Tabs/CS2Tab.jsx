@@ -4,7 +4,7 @@ export default function CS2Tab() {
   return (
     <div
         style={{
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/cs2characters.png')`,
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/public/1329760.jpeg')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         minHeight: '85vh',
