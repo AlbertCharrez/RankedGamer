@@ -5,6 +5,8 @@ import { useState } from 'react';
 
 
 export default function CS2Tab() {
+  
+  const [activeMode, setActiveMode] = useState('casual');
   return (
     <div
         style={{
