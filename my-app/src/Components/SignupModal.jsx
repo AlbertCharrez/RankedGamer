@@ -1,8 +1,7 @@
 import { useState } from "react";
 import GamePicker from "./GamePicker";
 import { isUsernameTaken, signUp } from "../Data/accounts";
-
-const USERNAME_RE = /^[A-Za-z0-9_.-]{3,20}$/;
+import { isUsernameTaken, signUp, USERNAME_RE } from "../Data/accounts";
 
 function friendlyError(err) {
   const msg = err?.message ?? "";

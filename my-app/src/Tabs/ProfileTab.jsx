@@ -3,6 +3,7 @@ import Avatar from "../Components/Avatar";
 
 export default function ProfileTab({ user, onOpenTab, onEdit, onLogout }) {
   const myGames = games.filter((g) => user.games.includes(g.id));
+  const wasRenamed = /^dunce\d+$/i.test(user.name);
 
   return (
     <div className="profile">
@@ -19,6 +20,13 @@ export default function ProfileTab({ user, onOpenTab, onEdit, onLogout }) {
           <button className="btn-secondary" onClick={onLogout}>Log out</button>
         </div>
       </header>
+
+      {wasRenamed && (
+        <div className="notice">
+          Your username wasn't allowed, so it was changed to <strong>{user.name}</strong>.
+          Click <strong>Edit profile</strong> to choose a new one.
+        </div>
+      )}
 
       <h2>Games I play</h2>
       {myGames.length === 0 ? (
