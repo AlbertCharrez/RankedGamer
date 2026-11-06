@@ -1,6 +1,5 @@
 import { useState } from "react";
 import GamePicker from "./GamePicker";
-import { isUsernameTaken, signUp } from "../Data/accounts";
 import { isUsernameTaken, signUp, USERNAME_RE } from "../Data/accounts";
 
 function friendlyError(err) {
