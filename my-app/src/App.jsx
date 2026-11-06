@@ -42,7 +42,10 @@ export default function App() {
 
   const tabs = {
     home:         { label: "Home",          content: <HomeTab onOpenTab={setActiveTab} /> },
-    deadlock:     { label: "Deadlock",      content: <DeadlockTab /> },
+    deadlock:     { label: "Deadlock",      content:(<DeadlockTab isLoggedIn={!!user}
+      user={user}
+      onLoginClick={() => setModal("login")}
+      onSignupClick={() => setModal("signup")} /> ),},
     marvelrivals: { label: "Marvel Rivals", content: <MarvelRivalsTab /> },
     cs2:          { label: "CS2",           content: <CS2Tab /> },
   };
