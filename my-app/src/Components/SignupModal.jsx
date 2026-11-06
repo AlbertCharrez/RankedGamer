@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ModalBackdrop from "./ModalBackdrop";
 import GamePicker from "./GamePicker";
 import { isUsernameTaken, signUp, USERNAME_RE } from "../Data/accounts";
 
@@ -67,12 +68,10 @@ export default function SignupModal({ onClose, onSwitchToLogin }) {
     }
   };
 
-  const stop = (e) => e.stopPropagation();
-
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <ModalBackdrop onClose={onClose}>
       {step === 1 && (
-        <form className="modal" onClick={stop} onSubmit={handleDetails}>
+        <form className="modal" onSubmit={handleDetails}>
           <p className="step-label">Step 1 of 2</p>
           <h2>Create an account</h2>
 
@@ -117,7 +116,7 @@ export default function SignupModal({ onClose, onSwitchToLogin }) {
       )}
 
       {step === 2 && (
-        <form className="modal" onClick={stop} onSubmit={handleFinish}>
+        <form className="modal" onSubmit={handleFinish}>
           <p className="step-label">Step 2 of 2</p>
           <h2>Welcome, {username.trim()}!</h2>
           <p className="field-label">What games do you play?</p>
@@ -136,7 +135,7 @@ export default function SignupModal({ onClose, onSwitchToLogin }) {
       )}
 
       {step === 3 && (
-        <div className="modal" onClick={stop}>
+        <div className="modal">
           <h2>Check your email</h2>
           <p className="field-label">
             We sent a confirmation link to <strong>{email.trim()}</strong>. Click it to activate
@@ -150,6 +149,6 @@ export default function SignupModal({ onClose, onSwitchToLogin }) {
           </div>
         </div>
       )}
-    </div>
+    </ModalBackdrop>
   );
 }

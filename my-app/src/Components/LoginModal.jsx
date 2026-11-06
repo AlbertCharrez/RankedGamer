@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ModalBackdrop from "./ModalBackdrop";
 import { logIn } from "../Data/accounts";
 
 function friendlyError(err) {
@@ -32,8 +33,8 @@ export default function LoginModal({ onLogin, onClose, onSwitchToSignup }) {
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <form className="modal" onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit}>
+    <ModalBackdrop onClose={onClose}>
+      <form className="modal" onSubmit={handleSubmit}>
         <h2>Log in</h2>
 
         <label className="field">
@@ -62,6 +63,6 @@ export default function LoginModal({ onLogin, onClose, onSwitchToSignup }) {
           <button type="button" className="link-btn" onClick={onSwitchToSignup}>Sign up</button>
         </p>
       </form>
-    </div>
+    </ModalBackdrop>
   );
 }

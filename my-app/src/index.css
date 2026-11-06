@@ -383,6 +383,39 @@ img.avatar { object-fit: cover; }
   color: var(--text-muted);
 }
 
+/* wrapper that positions the close button on the popup */
+.modal-shell {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.modal-close:hover {
+  background: var(--surface-2);
+  color: #fff;
+}
+
+/* keep long titles from running under the × */
+.modal h2 { padding-right: 36px; }
+
 /* ================= Edit profile: picture picker ================= */
 .avatar-picker {
   display: flex;
@@ -402,6 +435,16 @@ img.avatar { object-fit: cover; }
 .profile-header h1 { margin: 0; }
 .profile-header p { margin: 4px 0 0; color: var(--text-muted); }
 .profile-actions { margin-left: auto; display: flex; gap: 8px; }
+
+.notice {
+  margin-bottom: 24px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: rgba(255, 70, 85, 0.12);
+  border: 1px solid rgba(255, 70, 85, 0.4);
+  color: var(--text);
+  font-size: 15px;
+}
 
 /* ================= Footer ================= */
 .site-footer {

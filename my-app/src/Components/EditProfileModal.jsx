@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import ModalBackdrop from "./ModalBackdrop";
 import GamePicker from "./GamePicker";
 import Avatar from "./Avatar";
 import { updateProfile, resizeImage, isUsernameTaken, USERNAME_RE } from "../Data/accounts";
@@ -51,8 +52,8 @@ export default function EditProfileModal({ user, onSave, onClose }) {
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <form className="modal" onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit}>
+    <ModalBackdrop onClose={onClose}>
+      <form className="modal" onSubmit={handleSubmit}>
         <h2>Edit profile</h2>
 
         <label className="field">
@@ -88,6 +89,6 @@ export default function EditProfileModal({ user, onSave, onClose }) {
           </button>
         </div>
       </form>
-    </div>
+    </ModalBackdrop>
   );
 }
