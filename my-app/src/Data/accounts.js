@@ -1,5 +1,8 @@
 import { supabase } from "../lib/supabaseClient";
 
+// letters, numbers, _ . - and 3–20 characters long
+export const USERNAME_RE = /^[A-Za-z0-9_.-]{3,20}$/;
+
 // turn a profiles row into the user object the app already uses
 const toUser = (profile, email) =>
   profile && {
