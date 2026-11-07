@@ -19,13 +19,12 @@ export default function CS2Tab() {
         color: 'white'
         }}
         >
-        <h2> CS2 </h2>
+        <h2> Counter Strike Two </h2>
         <PlayerSearch />
         <p> Welcome to the CS2 tab!</p>
-      <h2>CS2</h2>
 
       {/* Related Tab navigation */}
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+      <div style={{ display: 'flex', gap: '10px', margin: '20px 0' }}>
         <button
           onClick={() => setActiveMode('casual')}
           style={{
