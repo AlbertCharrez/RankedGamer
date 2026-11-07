@@ -5,8 +5,19 @@ import { useState } from 'react';
 
 
 export default function CS2Tab() {
-  
-  const [activeMode, setActiveMode] = useState('casual');
+  //use no tab active
+  const [activeMode, setActiveMode] = useState(null);
+
+  //if a supporting tab is selected render it fully
+  if(activeMode === 'casual')
+  {
+    return <CS2CasualTab onBack ={() => setActiveMode(null)} />;
+  }
+  if(activeMode === 'competitive')
+  {
+    return <CS2CompetitiveTab onBack ={() => setActiveMode(null)} />;
+  }
+
   return (
     <div
         style={{
@@ -24,7 +35,7 @@ export default function CS2Tab() {
         <p> Welcome to the CS2 tab!</p>
 
       {/* Related Tab navigation */}
-      <div style={{ display: 'flex', gap: '10px', margin: '20px 0' }}>
+      <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
         <button
           onClick={() => setActiveMode('casual')}
           style={{
@@ -54,9 +65,6 @@ export default function CS2Tab() {
           Competitive Statistics
         </button>
       </div>
-
-      {/* Render Active View */}
-      {activeMode === 'casual' ? <CS2CasualTab /> : <CS2CompetitiveTab />}
     </div>
   );
 }
