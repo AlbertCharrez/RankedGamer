@@ -1,4 +1,4 @@
-//Order of the list below is the way in which the games will be displayed in the UI. 
+//Order of the list below is the way in which the games will be displayed in the UI. Note keep the image as, image: "/game.png" for cloudflare to not complain.
 
 export const games = [
   { id: "deadlock",     name: "Deadlock",      color: "#ff4655", image: "/deadlock.png",     account: "steam"  },
