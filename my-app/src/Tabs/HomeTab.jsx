@@ -1,7 +1,7 @@
 import { games } from "../Data/games";
 import PlayerProfileSearch from "../Components/PlayerProfileSearch";
 
-export default function HomeTab({ onOpenTab }) {
+export default function HomeTab({ onOpenTab, onOpenProfile }) {
   return (
     <div className="home">
       <section className="hero">
@@ -16,7 +16,7 @@ export default function HomeTab({ onOpenTab }) {
           <h1 className="site-title">
             Ranked<span>Gamer</span>
           </h1>
-          <PlayerProfileSearch onOpenTab={onOpenTab} />
+          <PlayerProfileSearch onOpenProfile={onOpenProfile} />
         </div>
       </section>
 
@@ -36,4 +36,4 @@ export default function HomeTab({ onOpenTab }) {
       </section>
     </div>
   );
-} 
+}

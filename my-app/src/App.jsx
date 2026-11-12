@@ -10,18 +10,39 @@ import EditProfileModal from "./Components/EditProfileModal";
 import SupportModal from "./Components/SupportModal";
 import Avatar from "./Components/Avatar";
 import { supabase } from "./lib/supabaseClient";
-import { fetchProfile, logOut } from "./Data/accounts";
+import { fetchProfile, fetchProfileByUsername, logOut } from "./Data/accounts";
+
+const TAB_IDS = ["home", "deadlock", "marvelrivals", "cs2", "profile"];
+
+// "/deadlock" -> { tab: "deadlock" },  "/u/Albert/cs2" -> { tab: "cs2", username: "Albert" }
+function readUrl() {
+  const parts = window.location.pathname.split("/").filter(Boolean);
+  if (parts[0] === "u" && parts[1]) {
+    const tab = TAB_IDS.includes(parts[2]) ? parts[2] : "profile";
+    return { tab, username: decodeURIComponent(parts[1]) };
+  }
+  return { tab: TAB_IDS.includes(parts[0]) ? parts[0] : "home", username: null };
+}
+
+// the reverse: current tab + viewed player -> URL
+function buildUrl(tab, viewed) {
+  if (viewed) {
+    const base = `/u/${encodeURIComponent(viewed.name)}`;
+    return tab === "profile" ? base : `${base}/${tab}`;
+  }
+  return tab === "home" ? "/" : `/${tab}`;
+}
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState("home");
-  const [user, setUser] = useState(null);
-  const [authReady, setAuthReady] = useState(false); // avoids flashing "Log in" while checking
+  const [activeTab, setActiveTab] = useState(() => readUrl().tab);
+  const [user, setUser] = useState(null);             // who's logged in
+  const [viewedUser, setViewedUser] = useState(null); // someone else's profile, or null = me
+  const [authReady, setAuthReady] = useState(false);
   const [modal, setModal] = useState(null); // null | "login" | "signup" | "edit" | "support"
 
-  // keep `user` in sync with Supabase (page load, login, logout, email confirmation)
+  // ---------- login state ----------
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      // Supabase recommends not awaiting other calls inside this callback
       setTimeout(async () => {
         setUser(await fetchProfile(session?.user));
         setAuthReady(true);
@@ -30,11 +51,62 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
+  // ---------- URL -> state (page load and Back/Forward buttons) ----------
+  useEffect(() => {
+    const applyUrl = async () => {
+      const { tab, username } = readUrl();
+      setActiveTab(tab);
+
+      if (!username) {
+        setViewedUser(null);
+        return;
+      }
+      try {
+        const profile = await fetchProfileByUsername(username);
+        if (profile) {
+          setViewedUser(profile);
+        } else {
+          setViewedUser(null);
+          setActiveTab("home"); // no one by that name
+        }
+      } catch {
+        setViewedUser(null);
+        setActiveTab("home");
+      }
+    };
+
+    applyUrl(); // on first load
+    window.addEventListener("popstate", applyUrl); // Back/Forward
+    return () => window.removeEventListener("popstate", applyUrl);
+  }, []);
+
+  // ---------- state -> URL (whenever you switch tabs or players) ----------
+  useEffect(() => {
+    const url = buildUrl(activeTab, viewedUser);
+    if (url !== window.location.pathname) {
+      window.history.pushState(null, "", url);
+    }
+  }, [activeTab, viewedUser]);
+
+  // the profile the tabs are showing: someone you clicked on, or yourself
+  const person = viewedUser ?? user;
+  const isOwn = !!user && person?.id === user.id;
+
   const closeModal = () => setModal(null);
 
-  // logging in and editing the profile end the same way
+  const openProfile = (p, tab = "profile") => {
+    setViewedUser(user && p.id === user.id ? null : p);
+    setActiveTab(tab);
+  };
+
+  const backToMe = () => {
+    setViewedUser(null);
+    if (!user) setActiveTab("home");
+  };
+
   const handleSave = (u) => {
     setUser(u);
+    setViewedUser(null);
     setModal(null);
     setActiveTab("profile");
   };
@@ -42,27 +114,36 @@ export default function App() {
   const handleLogout = async () => {
     await logOut();
     setUser(null);
+    setViewedUser(null);
     setActiveTab("home");
   };
 
+  const gameProps = { person, isOwn, onClearViewed: viewedUser ? backToMe : null };
+
   const tabs = {
-    home:         { label: "Home",          content: <HomeTab onOpenTab={setActiveTab} /> },
-    deadlock:     { label: "Deadlock",      content: <DeadlockTab /> },
-    marvelrivals: { label: "Marvel Rivals", content: <MarvelRivalsTab /> },
-    cs2:          { label: "CS2",           content: <CS2Tab /> },
+    home:         { label: "Home",          content: <HomeTab onOpenTab={setActiveTab} onOpenProfile={openProfile} /> },
+    deadlock:     { label: "Deadlock",      content: <DeadlockTab {...gameProps} /> },
+    marvelrivals: { label: "Marvel Rivals", content: <MarvelRivalsTab {...gameProps} /> },
+    cs2:          { label: "CS2",           content: <CS2Tab {...gameProps} /> },
   };
 
-  const content =
-    activeTab === "profile" && user ? (
+  let content;
+  if (activeTab === "profile" && !person && !authReady) {
+    content = null; // still checking who's logged in, don't flash the Home tab
+  } else if (activeTab === "profile" && person) {
+    content = (
       <ProfileTab
-        user={user}
+        user={person}
+        isOwn={isOwn}
         onOpenTab={setActiveTab}
         onEdit={() => setModal("edit")}
         onLogout={handleLogout}
+        onBackToMe={viewedUser ? backToMe : null}
       />
-    ) : (
-      (tabs[activeTab] ?? tabs.home).content
     );
+  } else {
+    content = (tabs[activeTab] ?? tabs.home).content;
+  }
 
   return (
     <div className="app">
@@ -81,20 +162,19 @@ export default function App() {
 
         {!authReady ? null : user ? (
           <button
-            className={activeTab === "profile" ? "profile-btn active" : "profile-btn"}
-            onClick={() => setActiveTab("profile")}
+            className={activeTab === "profile" && isOwn ? "profile-btn active" : "profile-btn"}
+            onClick={() => {
+              setViewedUser(null);
+              setActiveTab("profile");
+            }}
           >
             <Avatar user={user} size="small" />
             {user.name}
           </button>
         ) : (
           <div className="auth-buttons">
-            <button className="btn-primary" onClick={() => setModal("login")}>
-              Log in
-            </button>
-            <button className="btn-signup" onClick={() => setModal("signup")}>
-              Sign up
-            </button>
+            <button className="btn-primary" onClick={() => setModal("login")}>Log in</button>
+            <button className="btn-signup" onClick={() => setModal("signup")}>Sign up</button>
           </div>
         )}
       </nav>
@@ -109,11 +189,7 @@ export default function App() {
       </footer>
 
       {modal === "login" && (
-        <LoginModal
-          onLogin={handleSave}
-          onClose={closeModal}
-          onSwitchToSignup={() => setModal("signup")}
-        />
+        <LoginModal onLogin={handleSave} onClose={closeModal} onSwitchToSignup={() => setModal("signup")} />
       )}
 
       {modal === "signup" && (
