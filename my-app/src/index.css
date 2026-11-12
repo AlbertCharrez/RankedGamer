@@ -38,6 +38,8 @@ h1, h2 { color: #fff; }
 p { margin: 0; }
 a { color: inherit; text-decoration: none; }
 
+.muted { color: var(--text-muted); }
+
 /* ================= App layout ================= */
 .app {
   min-height: 100vh;
@@ -93,6 +95,8 @@ a { color: inherit; text-decoration: none; }
   cursor: pointer;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
+.btn-primary:disabled,
+.btn-secondary:disabled { opacity: 0.6; cursor: default; }
 
 /* Log in: red background, white text */
 .btn-primary {
@@ -141,83 +145,7 @@ a { color: inherit; text-decoration: none; }
 .link-btn:hover { text-decoration: underline; }
 .link-btn.small { font-size: 13px; }
 
-/* ---------- Linked accounts ---------- */
-.field-hint {
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-.linked-accounts {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 32px;
-  max-width: 520px;
-}
-.linked-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: 8px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  word-break: break-all;
-}
-.linked-label {
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-/* bar at the top of each game tab */
-.linked-banner {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  padding: 12px 16px;
-  margin-bottom: 24px;
-  border-radius: 10px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-}
-.linked-banner-text {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 200px;
-}
-
-/* search result names are now clickable */
-.player-card-header {
-  width: 100%;
-  padding: 0;
-  border: none;
-  background: none;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-}
-.player-card-header:hover strong { text-decoration: underline; }
-
-/* ================= Profile button + avatar ================= */
-.profile-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px 6px 6px;
-  border: none;
-  border-radius: 999px;
-  background: var(--surface-2);
-  color: var(--text);
-  font: inherit;
-  font-size: 15px;
-  cursor: pointer;
-}
-.profile-btn:hover, .profile-btn.active { background: var(--surface-3); }
-
+/* ================= Avatar + profile button ================= */
 .avatar {
   display: grid;
   place-items: center;
@@ -234,6 +162,21 @@ a { color: inherit; text-decoration: none; }
 
 /* uploaded pictures fill the circle without stretching */
 img.avatar { object-fit: cover; }
+
+.profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 6px 6px;
+  border: none;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+.profile-btn:hover, .profile-btn.active { background: var(--surface-3); }
 
 /* ================= Home hero: tagline left, title + search right ================= */
 .hero {
@@ -271,15 +214,11 @@ img.avatar { object-fit: cover; }
 }
 .site-title span { color: var(--brand); }
 
-.hero-right .profile-search,
-.hero-right .player-search {
+.hero-right .profile-search {
   width: 100%;
   max-width: 520px;
-  margin: 0;
 }
 .hero-right .search-bubble { max-width: none; width: 100%; }
-.hero-right .profile-results,
-.hero-right .player-results { text-align: left; max-width: none; }
 
 /* ================= Game cards ================= */
 .game-grid {
@@ -322,20 +261,14 @@ img.avatar { object-fit: cover; }
   text-overflow: ellipsis;
 }
 
-/* ================= Player search results ================= */
-.player-results {
+/* ================= Account search results ================= */
+.profile-results {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   margin-top: 16px;
-  list-style: none;
-  padding: 0;
+  text-align: left;
 }
-.player-results li {
-  padding: 8px 0;
-  border-bottom: 1px solid #333;
-}
-
-.profile-search { max-width: 600px; margin: 0 auto; }
-.profile-results { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; text-align: left; }
-.no-results, .muted { color: var(--text-muted); }
 
 .player-card {
   background: var(--surface);
@@ -343,17 +276,25 @@ img.avatar { object-fit: cover; }
   border-radius: 10px;
   padding: 14px 16px;
 }
-.player-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-.game-count { margin-left: auto; color: var(--text-muted); font-size: 14px; }
 
-.badge {
-  font-size: 12px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: rgba(255, 70, 85, 0.15);
-  color: var(--brand);
-  font-weight: 600;
+/* the clickable name row at the top of each result */
+.player-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }
+.player-card-header:hover strong { text-decoration: underline; }
+
+.game-count { margin-left: auto; color: var(--text-muted); font-size: 14px; }
 
 .player-games { display: flex; flex-wrap: wrap; gap: 8px; }
 .game-chip {
@@ -381,7 +322,16 @@ img.avatar { object-fit: cover; }
   place-items: center;
   z-index: 100;
   padding: 16px;
+  overflow-y: auto;   /* lets tall popups scroll on small screens */
 }
+
+/* wrapper that positions the close button on the popup */
+.modal-shell {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+}
+
 .modal {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -391,65 +341,8 @@ img.avatar { object-fit: cover; }
   max-width: 400px;
   text-align: left;
 }
-.modal h2 { margin: 0 0 16px; }
-
-.step-label {
-  margin: 0 0 4px;
-  font-size: 13px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
-.field input,
-.field select,
-.field textarea {
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text);
-  font: inherit;
-  font-size: 15px;
-}
-.field textarea { resize: vertical; }
-.field-label { margin: 0 0 8px; }
-
-.game-checks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-.game-check {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px;
-  border-radius: 6px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  cursor: pointer;
-}
-.game-check.checked { border-color: var(--brand); }
-
-.modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
-
-.form-error {
-  margin: -4px 0 16px;
-  color: var(--error);
-  font-size: 14px;
-}
-
-.switch-auth {
-  margin: 16px 0 0;
-  text-align: center;
-  font-size: 14px;
-  color: var(--text-muted);
-}
-
-/* wrapper that positions the close button on the popup */
-.modal-shell {
-  position: relative;
-  width: 100%;
-  max-width: 400px;
-}
+/* padding-right keeps long titles from running under the × */
+.modal h2 { margin: 0 0 16px; padding-right: 36px; }
 
 .modal-close {
   position: absolute;
@@ -474,10 +367,43 @@ img.avatar { object-fit: cover; }
   color: #fff;
 }
 
-/* keep long titles from running under the × */
-.modal h2 { padding-right: 36px; }
+.step-label {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
 
-/* ================= Edit profile: picture picker ================= */
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.field input,
+.field select,
+.field textarea {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+}
+.field textarea { resize: vertical; }
+.field-label { margin: 0 0 8px; }
+.field-hint { font-size: 13px; color: var(--text-muted); }
+
+.game-checks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.game-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+.game-check.checked { border-color: var(--brand); }
+
 .avatar-picker {
   display: flex;
   align-items: center;
@@ -489,6 +415,21 @@ img.avatar { object-fit: cover; }
   flex-direction: column;
   align-items: flex-start;
   gap: 6px;
+}
+
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+.form-error {
+  margin: -4px 0 16px;
+  color: var(--error);
+  font-size: 14px;
+}
+
+.switch-auth {
+  margin: 16px 0 0;
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-muted);
 }
 
 /* ================= Profile page ================= */
@@ -505,6 +446,55 @@ img.avatar { object-fit: cover; }
   border: 1px solid rgba(255, 70, 85, 0.4);
   color: var(--text);
   font-size: 15px;
+}
+
+.linked-accounts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 32px;
+  max-width: 520px;
+}
+.linked-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  word-break: break-all;
+}
+.linked-label {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ================= Game tabs ================= */
+/* bar at the top of each game tab showing whose account you're viewing */
+.linked-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.linked-banner-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 200px;
+}
+
+.game-tab h1 {
+  margin: 0 0 8px;
+  border-left: 4px solid var(--accent, var(--brand));
+  padding-left: 12px;
 }
 
 /* ================= Footer ================= */

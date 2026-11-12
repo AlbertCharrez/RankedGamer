@@ -1,7 +1,7 @@
 import { games } from "../Data/games";
+import { steamProfileUrl } from "../Data/accounts";
 import Avatar from "../Components/Avatar";
-
-const steamUrl = (id) => `https://steamcommunity.com/profiles/${id}`;
+import GameCard from "../Components/GameCard";
 
 export default function ProfileTab({ user, isOwn, onOpenTab, onEdit, onLogout, onBackToMe }) {
   const myGames = games.filter((g) => user.games.includes(g.id));
@@ -30,9 +30,7 @@ export default function ProfileTab({ user, isOwn, onOpenTab, onEdit, onLogout, o
               <button className="btn-secondary" onClick={onLogout}>Log out</button>
             </>
           ) : (
-            onBackToMe && (
-              <button className="btn-secondary" onClick={onBackToMe}>← Back</button>
-            )
+            onBackToMe && <button className="btn-secondary" onClick={onBackToMe}>← Back</button>
           )}
         </div>
       </header>
@@ -49,7 +47,7 @@ export default function ProfileTab({ user, isOwn, onOpenTab, onEdit, onLogout, o
         <div className="linked-row">
           <span className="linked-label">Steam (Deadlock, CS2)</span>
           {user.steamId ? (
-            <a className="link-btn" href={steamUrl(user.steamId)} target="_blank" rel="noreferrer">
+            <a className="link-btn" href={steamProfileUrl(user.steamId)} target="_blank" rel="noreferrer">
               {user.steamId} ↗
             </a>
           ) : (
@@ -70,16 +68,7 @@ export default function ProfileTab({ user, isOwn, onOpenTab, onEdit, onLogout, o
       ) : (
         <section className="game-grid">
           {myGames.map((g) => (
-            <button
-              key={g.id}
-              type="button"
-              className="game-card"
-              style={{ "--accent": g.color }}
-              onClick={() => onOpenTab(g.id)}
-            >
-              <img src={g.image} alt={g.name} />
-              <span>{g.name}</span>
-            </button>
+            <GameCard key={g.id} game={g} onClick={() => onOpenTab(g.id)} />
           ))}
         </section>
       )}

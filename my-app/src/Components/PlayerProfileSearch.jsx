@@ -2,9 +2,7 @@ import { useState } from "react";
 import SearchBubble from "./SearchBubble.jsx";
 import Avatar from "./Avatar";
 import { searchAllPlayers } from "../Data/accounts";
-import { games } from "../Data/games";
-
-const gameInfo = (id) => games.find((g) => g.id === id) ?? { id, name: id, color: "#888" };
+import { getGame } from "../Data/games";
 
 export default function PlayerProfileSearch({ onOpenProfile }) {
   const [results, setResults] = useState(null); // null = not searched yet
@@ -29,11 +27,11 @@ export default function PlayerProfileSearch({ onOpenProfile }) {
       {results !== null && (
         <div className="profile-results">
           {results.length === 0 ? (
-            <p className="no-results">No players found.</p>
+            <p className="muted">No players found.</p>
           ) : (
             results.map((p) => (
               <div key={p.id} className="player-card">
-                <button type="button" className="player-card-header" onClick={() => onOpenProfile?.(p)}>
+                <button type="button" className="player-card-header" onClick={() => onOpenProfile(p)}>
                   <Avatar user={p} size="small" />
                   <strong>{p.name}</strong>
                   <span className="game-count">
@@ -46,14 +44,15 @@ export default function PlayerProfileSearch({ onOpenProfile }) {
                     <span className="muted">No games listed</span>
                   ) : (
                     p.games.map((id) => {
-                      const g = gameInfo(id);
+                      const g = getGame(id);
+                      if (!g) return null; // skip games that no longer exist
                       return (
                         <button
                           key={id}
                           type="button"
                           className="game-chip"
                           style={{ "--accent": g.color }}
-                          onClick={() => onOpenProfile?.(p, id)}
+                          onClick={() => onOpenProfile(p, id)}
                         >
                           <span className="game-chip-name">{g.name}</span>
                         </button>

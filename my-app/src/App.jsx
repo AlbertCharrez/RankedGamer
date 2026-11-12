@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import HomeTab from "./Tabs/HomeTab";
-import DeadlockTab from "./Tabs/DeadlockTab";
-import MarvelRivalsTab from "./Tabs/MarvelRivalsTab";
-import CS2Tab from "./Tabs/CS2Tab";
+import GameTab from "./Tabs/GameTab";
 import ProfileTab from "./Tabs/ProfileTab";
 import LoginModal from "./Components/LoginModal";
 import SignupModal from "./Components/SignupModal";
@@ -11,8 +9,9 @@ import SupportModal from "./Components/SupportModal";
 import Avatar from "./Components/Avatar";
 import { supabase } from "./lib/supabaseClient";
 import { fetchProfile, fetchProfileByUsername, logOut } from "./Data/accounts";
+import { games } from "./Data/games";
 
-const TAB_IDS = ["home", "deadlock", "marvelrivals", "cs2", "profile"];
+const TAB_IDS = ["home", ...games.map((g) => g.id), "profile"];
 
 // "/deadlock" -> { tab: "deadlock" },  "/u/Albert/cs2" -> { tab: "cs2", username: "Albert" }
 function readUrl() {
@@ -24,7 +23,7 @@ function readUrl() {
   return { tab: TAB_IDS.includes(parts[0]) ? parts[0] : "home", username: null };
 }
 
-// the reverse: current tab + viewed player -> URL
+// current tab + viewed player -> URL
 function buildUrl(tab, viewed) {
   if (viewed) {
     const base = `/u/${encodeURIComponent(viewed.name)}`;
@@ -39,8 +38,9 @@ export default function App() {
   const [viewedUser, setViewedUser] = useState(null); // someone else's profile, or null = me
   const [authReady, setAuthReady] = useState(false);
   const [modal, setModal] = useState(null); // null | "login" | "signup" | "edit" | "support"
+  const urlReady = useRef(false); // false while we're reading the URL, so we don't overwrite it
 
-  // ---------- login state ----------
+  // login state
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setTimeout(async () => {
@@ -51,41 +51,39 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // ---------- URL -> state (page load and Back/Forward buttons) ----------
+  // URL -> state (page load and Back/Forward)
   useEffect(() => {
     const applyUrl = async () => {
+      urlReady.current = false;
       const { tab, username } = readUrl();
       setActiveTab(tab);
 
-      if (!username) {
-        setViewedUser(null);
-        return;
-      }
       try {
-        const profile = await fetchProfileByUsername(username);
-        if (profile) {
-          setViewedUser(profile);
-        } else {
+        if (!username) {
           setViewedUser(null);
-          setActiveTab("home"); // no one by that name
+          return;
         }
+        const profile = await fetchProfileByUsername(username);
+        setViewedUser(profile);
+        if (!profile) setActiveTab("home"); // no one by that name
       } catch {
         setViewedUser(null);
         setActiveTab("home");
+      } finally {
+        urlReady.current = true;
       }
     };
 
-    applyUrl(); // on first load
-    window.addEventListener("popstate", applyUrl); // Back/Forward
+    applyUrl();
+    window.addEventListener("popstate", applyUrl);
     return () => window.removeEventListener("popstate", applyUrl);
   }, []);
 
-  // ---------- state -> URL (whenever you switch tabs or players) ----------
+  // state -> URL (skipped while the URL is being read)
   useEffect(() => {
+    if (!urlReady.current) return;
     const url = buildUrl(activeTab, viewedUser);
-    if (url !== window.location.pathname) {
-      window.history.pushState(null, "", url);
-    }
+    if (url !== window.location.pathname) window.history.pushState(null, "", url);
   }, [activeTab, viewedUser]);
 
   // the profile the tabs are showing: someone you clicked on, or yourself
@@ -118,18 +116,24 @@ export default function App() {
     setActiveTab("home");
   };
 
-  const gameProps = { person, isOwn, onClearViewed: viewedUser ? backToMe : null };
-
   const tabs = {
-    home:         { label: "Home",          content: <HomeTab onOpenTab={setActiveTab} onOpenProfile={openProfile} /> },
-    deadlock:     { label: "Deadlock",      content: <DeadlockTab {...gameProps} /> },
-    marvelrivals: { label: "Marvel Rivals", content: <MarvelRivalsTab {...gameProps} /> },
-    cs2:          { label: "CS2",           content: <CS2Tab {...gameProps} /> },
+    home: { label: "Home", content: <HomeTab onOpenTab={setActiveTab} onOpenProfile={openProfile} /> },
+    ...Object.fromEntries(
+      games.map((g) => [
+        g.id,
+        {
+          label: g.name,
+          content: (
+            <GameTab game={g} person={person} isOwn={isOwn} onClearViewed={viewedUser ? backToMe : null} />
+          ),
+        },
+      ])
+    ),
   };
 
   let content;
   if (activeTab === "profile" && !person && !authReady) {
-    content = null; // still checking who's logged in, don't flash the Home tab
+    content = null; // still checking who's logged in
   } else if (activeTab === "profile" && person) {
     content = (
       <ProfileTab
@@ -191,15 +195,12 @@ export default function App() {
       {modal === "login" && (
         <LoginModal onLogin={handleSave} onClose={closeModal} onSwitchToSignup={() => setModal("signup")} />
       )}
-
       {modal === "signup" && (
         <SignupModal onClose={closeModal} onSwitchToLogin={() => setModal("login")} />
       )}
-
       {modal === "edit" && user && (
         <EditProfileModal user={user} onSave={handleSave} onClose={closeModal} />
       )}
-
       {modal === "support" && <SupportModal user={user} onClose={closeModal} />}
     </div>
   );

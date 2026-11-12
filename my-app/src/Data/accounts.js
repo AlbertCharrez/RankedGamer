@@ -34,6 +34,8 @@ export function parseSteamId(input) {
   return match ? match[0] : undefined;
 }
 
+export const steamProfileUrl = (id) => `https://steamcommunity.com/profiles/${id}`;
+
 // ---------- Auth ----------
 
 export async function signUp({ email, password, username, games }) {
