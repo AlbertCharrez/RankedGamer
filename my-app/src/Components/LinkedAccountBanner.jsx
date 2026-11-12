@@ -1,7 +1,7 @@
 import Avatar from "./Avatar";
 import { steamProfileUrl } from "../Data/accounts";
 
-export default function LinkedAccountBanner({ game, person, isOwn, onClear }) {
+export default function LinkedAccountBanner({ game, person, isOwn, onClear, onLinkAccounts }) {
   if (!person) {
     return (
       <div className="linked-banner">
@@ -22,7 +22,7 @@ export default function LinkedAccountBanner({ game, person, isOwn, onClear }) {
         <strong>{isOwn ? "You" : `Viewing ${person.name}`}</strong>
         {!value ? (
           <span className="muted">
-            {isOwn ? `You haven't linked ${what} yet. Add it in Edit profile.` : `${person.name} hasn't linked ${what}.`}
+            {isOwn ? `You haven't linked ${what} yet.` : `${person.name} hasn't linked ${what}.`}
           </span>
         ) : usesSteam ? (
           <span>
@@ -35,6 +35,12 @@ export default function LinkedAccountBanner({ game, person, isOwn, onClear }) {
           <span>Marvel Rivals UID: {value}</span>
         )}
       </div>
+
+      {isOwn && !value && onLinkAccounts && (
+        <button type="button" className="btn-primary" onClick={onLinkAccounts}>
+          {usesSteam ? "Link Steam" : "Link Rivals UID"}
+        </button>
+      )}
 
       {onClear && (
         <button type="button" className="btn-secondary" onClick={onClear}>
