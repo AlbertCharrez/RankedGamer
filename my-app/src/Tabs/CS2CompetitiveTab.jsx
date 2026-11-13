@@ -50,7 +50,7 @@ export default function CS2CompetitiveTab({ onBack }) {
       <h2 style={{ marginBottom: '15px' }}>Competitive CS2 Statistics</h2>
       <PlayerSearch />
 
-      {/* Card Grid Container */}
+      {/* Card Grid structuer */}
       <div 
         style={{ 
           display: 'grid', 
