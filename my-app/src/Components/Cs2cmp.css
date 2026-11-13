@@ -4,7 +4,7 @@
   aspect-ratio: 3 / 4;
   background-color: #090909;
   /* Uses the same card art multiple times */
-  background-image: url('../public/12455094_4920488_2.jpg');
+  background-image: url('/cardartcs2.jpg');
   background-size: cover;
   background-position: center;
   border: 1px solid rgba(255, 255, 255, 0.12);

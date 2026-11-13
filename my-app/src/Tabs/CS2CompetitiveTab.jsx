@@ -23,7 +23,7 @@ export default function CS2CompetitiveTab({ onBack }) {
   return (
     <div
       style={{
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.75)), url('/413301638_4a2518e2-b7a8-467a-8cac-925f6e5250eb (1).jpg')`,
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.75)), url('background2cs2.jpg')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         minHeight: '85vh',
