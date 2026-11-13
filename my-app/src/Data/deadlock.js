@@ -1,4 +1,4 @@
-const API = "/api/deadlock"; // forwarded to api.deadlock-api.com by Vite (dev) or the Worker (live)
+const API = "https://api.deadlock-api.com";
 const STEAM64_BASE = 76561197960265728n; // SteamID64 -> Deadlock account_id offset
 
 // SteamID64 (string) -> Deadlock account id (string)
