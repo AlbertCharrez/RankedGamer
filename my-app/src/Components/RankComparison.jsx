@@ -46,6 +46,13 @@ export default function RankComparison({ steamId }) {
       } catch (err) {
         if (!cancelled) setState({ status: "error", message: err.message });
       }
+        if (state.status === "norank") {
+      return (
+        <div className="stats-card muted">
+          Rank comparison needs a current rank. Play some ranked matches and check back.
+        </div>
+      );
+}
     })();
 
     return () => {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { fetchMatchHistory, fetchHeroNames, summarize, isWin } from "../Data/deadlock";
+import { fetchMatchHistory, fetchHeroes, summarize, isWin } from "../Data/deadlock";
+import MatchSpotlight from "./MatchSpotlight";
 
 const formatDuration = (s = 0) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 const formatDate = (unix) =>
@@ -7,17 +8,19 @@ const formatDate = (unix) =>
 
 export default function DeadlockStats({ steamId, recentCount = 5 }) {
   const [state, setState] = useState({ status: "loading" });
+  const [selectedId, setSelectedId] = useState(null); // null = newest match
 
   useEffect(() => {
     let cancelled = false;
     setState({ status: "loading" });
+    setSelectedId(null);
 
-    Promise.all([fetchMatchHistory(steamId), fetchHeroNames()])
+    Promise.all([fetchMatchHistory(steamId), fetchHeroes()])
       .then(([matches, heroes]) => !cancelled && setState({ status: "ready", matches, heroes }))
       .catch((err) => !cancelled && setState({ status: "error", message: err.message }));
 
     return () => {
-      cancelled = true; // ignore results if the player changed while loading
+      cancelled = true;
     };
   }, [steamId]);
 
@@ -25,7 +28,7 @@ export default function DeadlockStats({ steamId, recentCount = 5 }) {
   if (state.status === "error") return <div className="stats-card form-error">{state.message}</div>;
 
   const { matches, heroes } = state;
-  const heroName = (id) => heroes[id] ?? `Hero ${id}`;
+  const heroName = (id) => heroes[id]?.name ?? `Hero ${id}`;
 
   if (matches.length === 0) {
     return (
@@ -36,6 +39,8 @@ export default function DeadlockStats({ steamId, recentCount = 5 }) {
   }
 
   const s = summarize(matches);
+  const recent = matches.slice(0, recentCount);
+  const selected = recent.find((m) => m.match_id === selectedId) ?? recent[0];
 
   return (
     <div className="stats-card">
@@ -62,17 +67,30 @@ export default function DeadlockStats({ steamId, recentCount = 5 }) {
         )}
       </div>
 
-      <p className="stats-caption">Recent matches</p>
+      <p className="stats-caption">{selected === recent[0] ? "Latest match" : "Selected match"}</p>
+      <MatchSpotlight steamId={steamId} match={selected} heroes={heroes} />
+
+      <p className="stats-caption">Recent matches · click one for details</p>
       <ul className="match-list">
-        {matches.slice(0, recentCount).map((m) => {
+        {recent.map((m) => {
           const won = isWin(m);
+          const active = m.match_id === selected.match_id;
           return (
-            <li key={m.match_id} className={won ? "match-row win" : "match-row loss"}>
-              <span className="match-result">{won ? "W" : "L"}</span>
-              <span className="match-hero">{heroName(m.hero_id)}</span>
-              <span>{m.player_kills ?? 0} / {m.player_deaths ?? 0} / {m.player_assists ?? 0}</span>
-              <span className="muted">{formatDuration(m.match_duration_s)}</span>
-              <span className="muted">{formatDate(m.start_time)}</span>
+            <li key={m.match_id}>
+              <button
+                type="button"
+                className={`match-row ${won ? "win" : "loss"}${active ? " active" : ""}`}
+                onClick={() => setSelectedId(m.match_id)}
+              >
+                <span className="match-result">{won ? "W" : "L"}</span>
+                <span className="match-hero">
+                  {heroes[m.hero_id]?.icon && <img className="match-hero-icon" src={heroes[m.hero_id].icon} alt="" />}
+                  {heroName(m.hero_id)}
+                </span>
+                <span>{m.player_kills ?? 0} / {m.player_deaths ?? 0} / {m.player_assists ?? 0}</span>
+                <span className="muted">{formatDuration(m.match_duration_s)}</span>
+                <span className="muted">{formatDate(m.start_time)}</span>
+              </button>
             </li>
           );
         })}

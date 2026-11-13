@@ -1,4 +1,4 @@
-const API = "https://api.deadlock-api.com";
+const API = "/api/deadlock"; // forwarded to api.deadlock-api.com by Vite (dev) or the Worker (live)
 const STEAM64_BASE = 76561197960265728n; // SteamID64 -> Deadlock account_id offset
 
 // SteamID64 (string) -> Deadlock account id (string)
@@ -7,17 +7,30 @@ export const toAccountId = (steamId) => (BigInt(steamId) - STEAM64_BASE).toStrin
 // a match counts as a win when the player's team is the winning team
 export const isWin = (m) => m.match_result === m.player_team;
 
-// ---------- hero names (loaded once, shared by every component) ----------
-let heroNamesPromise = null;
+// ---------- heroes (names + images, loaded once) ----------
+const BANNER_KEYS = ["background_image_webp", "background_image", "selection_image_webp", "selection_image", "icon_hero_card_webp", "icon_hero_card"];
+const ICON_KEYS = ["icon_image_small_webp", "icon_image_small", "minimap_image_webp", "minimap_image", "icon_hero_card_webp", "icon_hero_card"];
+const pickImage = (images, keys) => keys.map((k) => images?.[k]).find(Boolean) ?? null;
 
-export function fetchHeroNames() {
-  heroNamesPromise ??= fetch(`${API}/v1/assets/heroes`)
+let heroesPromise = null;
+
+export function fetchHeroes() {
+  heroesPromise ??= fetch(`${API}/v1/assets/heroes`)
     .then((res) => (res.ok ? res.json() : []))
-    .then((list) =>
-      Object.fromEntries((Array.isArray(list) ? list : []).map((h) => [h.id, h.name]))
-    )
-    .catch(() => ({})); // if this fails, heroes show as "Hero 12" instead of names
-  return heroNamesPromise;
+    .then((list) => {
+      const heroes = Array.isArray(list) ? list : [];
+      if (import.meta.env.DEV && heroes[0]) {
+        console.debug("Deadlock hero image fields:", Object.keys(heroes[0].images ?? {}));
+      }
+      return Object.fromEntries(
+        heroes.map((h) => [
+          h.id,
+          { name: h.name, banner: pickImage(h.images, BANNER_KEYS), icon: pickImage(h.images, ICON_KEYS) },
+        ])
+      );
+    })
+    .catch(() => ({}));
+  return heroesPromise;
 }
 
 // ---------- match history (cached for 5 minutes per player) ----------
@@ -101,21 +114,22 @@ function fetchMetrics(params) {
   return metricsCache.get(qs);
 }
 
-export const COMPARE_DAYS = 30;
+export const COMPARE_DAYS = 14;
 
 // the player's averages and their rank group's distribution, using the same filters for both
 export async function fetchComparison(steamId, badge) {
+  // without a rank, the "everyone" comparison is too heavy for the API and times out
+  if (!badge) return { group: null, player: null, noRank: true };
+
   const since = Math.floor(Date.now() / 1000) - COMPARE_DAYS * 86400;
   const filters = {
     game_mode: "normal",
-    min_unix_timestamp: String(Math.floor(since / 3600) * 3600), // rounded to the hour so caching works
+    min_unix_timestamp: String(Math.floor(since / 3600) * 3600),
   };
 
-  if (badge) {
-    const tier = Math.floor(badge / 10); // e.g. badge 103 -> tier 10, subtiers 101–106
-    filters.min_average_badge = String(tier * 10 + 1);
-    filters.max_average_badge = String(tier * 10 + 6);
-  }
+  const tier = Math.floor(badge / 10);
+  filters.min_average_badge = String(tier * 10 + 1);
+  filters.max_average_badge = String(tier * 10 + 6);
 
   const [group, player] = await Promise.all([
     fetchMetrics(filters),
@@ -156,4 +170,46 @@ export function percentileOf(value, dist) {
     if (value <= v1) return v1 === v0 ? p1 : p0 + ((p1 - p0) * (value - v0)) / (v1 - v0);
   }
   return null;
+}
+
+// ---------- teams ----------
+// Assumed mapping: team 0 = The Hidden King (amber), team 1 = The Archmother (sapphire)
+export const TEAMS = {
+  0: { name: "The Hidden King", color: "#e0a33a" },
+  1: { name: "The Archmother", color: "#4f8ef7" },
+};
+
+// the API may send the team as 0/1 or as "Team0"/"Team1"
+export const teamIndex = (team) =>
+  typeof team === "number" ? team : Number(String(team ?? "").replace(/\D/g, ""));
+
+// ---------- single match details (cached; finished matches never change) ----------
+const metadataCache = new Map();
+
+export function fetchMatchMetadata(matchId) {
+  if (!metadataCache.has(matchId)) {
+    const request = fetch(`${API}/v1/matches/${matchId}/metadata`).then(async (res) => {
+      if (!res.ok) throw new Error("Couldn't load this match's details.");
+      const data = await res.json();
+      if (import.meta.env.DEV) console.debug("Deadlock match metadata:", data);
+      return data.match_info ?? data;
+    });
+    request.catch(() => metadataCache.delete(matchId));
+    metadataCache.set(matchId, request);
+  }
+  return metadataCache.get(matchId);
+}
+
+// ---------- Steam names for a list of account ids ----------
+export async function fetchSteamNames(accountIds) {
+  const ids = [...new Set(accountIds.filter(Boolean))];
+  if (ids.length === 0) return {};
+  try {
+    const res = await fetch(`${API}/v1/players/steam?account_ids=${ids.join(",")}`);
+    if (!res.ok) return {};
+    const list = await res.json();
+    return Object.fromEntries((Array.isArray(list) ? list : []).map((p) => [p.account_id, p.personaname]));
+  } catch {
+    return {};
+  }
 }

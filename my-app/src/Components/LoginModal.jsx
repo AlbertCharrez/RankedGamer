@@ -9,7 +9,7 @@ function friendlyError(err) {
   return msg || "Something went wrong. Please try again.";
 }
 
-export default function LoginModal({ onLogin, onClose, onSwitchToSignup }) {
+export default function LoginModal({ onLogin, onClose, onSwitchToSignup, onForgotPassword }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -48,6 +48,15 @@ export default function LoginModal({ onLogin, onClose, onSwitchToSignup }) {
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
                  autoComplete="current-password" />
         </label>
+
+        <button
+          type="button"
+          className="link-btn small"
+          style={{ marginTop: -8, marginBottom: 16 }}
+          onClick={onForgotPassword}
+        >
+          Forgot password?
+        </button>
 
         {error && <p className="form-error">{error}</p>}
 
