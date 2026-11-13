@@ -1,9 +1,5 @@
-//Order of the list below is the way in which the games will be displayed in the UI. Note keep the image as, image: "/game.png" for cloudflare to not complain.
-
 export const games = [
-  { id: "deadlock",     name: "Deadlock",      color: "#ff4655", image: "/deadlock.png",     account: "steam"  },
-  { id: "marvelrivals", name: "Marvel Rivals", color: "#da292a", image: "/rivals.png", account: "rivals" },
-  { id: "cs2",          name: "CS2",           color: "#9d4dbb", image: "/cs2.png",          account: "steam"  },
+    {id: "cs2", name: "CS2", color: "#ff4655", image: "/cs2.png"},
+    {id: "rivals", name: "Marvel Rivals", color: "#da292a", image: "/rivals.png"},
+    {id: "deadlock", name: "Deadlock", color: "#9d4dbb", image: "/deadlock.png"}
 ];
-
-export const getGame = (id) => games.find((g) => g.id === id);

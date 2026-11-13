@@ -1,8 +1,6 @@
 import { useState } from "react";
-import ModalBackdrop from "./ModalBackdrop";
 
-const SUPPORT_EMAIL = "support@yourdomain.com"; // <-- change this
-
+const SUPPORT_EMAIL = "rankedgamersupp@gmail.com";
 const TOPICS = [
   "I can't log in",
   "I forgot my password",
@@ -33,8 +31,8 @@ export default function SupportModal({ user, onClose }) {
   };
 
   return (
-    <ModalBackdrop onClose={onClose}>
-      <form className="modal" onSubmit={handleSubmit}>
+    <div className="modal-backdrop" onClick={onClose}>
+      <form className="modal" onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit}>
         <h2>Contact support</h2>
         <p className="field-label">
           {user ? `Logged in as ${user.name}` : "You're not logged in. That's okay, we can still help."}
@@ -69,6 +67,6 @@ export default function SupportModal({ user, onClose }) {
           <a className="link-btn" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>
         </p>
       </form>
-    </ModalBackdrop>
+    </div>
   );
 }

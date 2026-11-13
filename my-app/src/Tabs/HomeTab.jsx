@@ -1,8 +1,7 @@
 import { games } from "../Data/games";
-import GameCard from "../Components/GameCard";
 import PlayerProfileSearch from "../Components/PlayerProfileSearch";
 
-export default function HomeTab({ onOpenTab, onOpenProfile }) {
+export default function HomeTab({ onOpenTab }) {
   return (
     <div className="home">
       <section className="hero">
@@ -17,15 +16,24 @@ export default function HomeTab({ onOpenTab, onOpenProfile }) {
           <h1 className="site-title">
             Ranked<span>Gamer</span>
           </h1>
-          <PlayerProfileSearch onOpenProfile={onOpenProfile} />
+          <PlayerProfileSearch onOpenTab={onOpenTab} />
         </div>
       </section>
 
       <section className="game-grid">
         {games.map((g) => (
-          <GameCard key={g.id} game={g} onClick={() => onOpenTab(g.id)} />
+          <button
+            key={g.id}
+            type="button"
+            className="game-card"
+            style={{ "--accent": g.color }}
+            onClick={() => onOpenTab(g.id)}
+          >
+            <img src={g.image} alt={g.name} />
+            <span>{g.name}</span>
+          </button>
         ))}
       </section>
     </div>
   );
-}
+} 
