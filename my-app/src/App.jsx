@@ -77,6 +77,18 @@ export default function App() {
         urlReady.current = true;
       }
     };
+    // page title for the current tab / profile
+    useEffect(() => {
+      const game = games.find((g) => g.id === activeTab);
+      const who = viewedUser?.name ?? (activeTab === "profile" ? user?.name : null);
+
+      const parts = [];
+      if (who) parts.push(who);
+      if (game) parts.push(game.name);
+      if (!who && !game && activeTab === "profile") parts.push("Profile");
+
+      document.title = parts.length ? `${parts.join(" · ")} · RankedGamer` : "RankedGamer: Deadlock, CS2 & Marvel Rivals Stats";
+    }, [activeTab, viewedUser, user]);
 
     applyUrl();
     window.addEventListener("popstate", applyUrl);

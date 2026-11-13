@@ -34,9 +34,9 @@ export default function ProfileTab({ user, isOwn, onOpenTab, onEdit, onLinkAccou
         <div className="profile-actions">
           {isOwn ? (
             <>
-              <button className="btn-secondary" onClick={onLinkAccounts}>Link accounts</button>
-              <button className="btn-secondary" onClick={onEdit}>Edit profile</button>
-              <button className="btn-secondary" onClick={onLogout}>Log out</button>
+              <button className="btn-secondary" onClick={onLinkAccounts}>Link Accounts</button>
+              <button className="btn-secondary" onClick={onEdit}>Edit Profile</button>
+              <button className="btn-secondary" onClick={onLogout}>Log Out</button>
             </>
           ) : (
             onBackToMe && <button className="btn-secondary" onClick={onBackToMe}>← Back</button>
