@@ -4,7 +4,10 @@ import GameTab from "./Tabs/GameTab";
 import ProfileTab from "./Tabs/ProfileTab";
 import LoginModal from "./Components/LoginModal";
 import SignupModal from "./Components/SignupModal";
+import ForgotPasswordModal from "./Components/ForgotPasswordModal";
+import ResetPasswordModal from "./Components/ResetPasswordModal";
 import EditProfileModal from "./Components/EditProfileModal";
+import LinkAccountsModal from "./Components/LinkAccountsModal";
 import SupportModal from "./Components/SupportModal";
 import Avatar from "./Components/Avatar";
 import { supabase } from "./lib/supabaseClient";
@@ -37,12 +40,13 @@ export default function App() {
   const [user, setUser] = useState(null);             // who's logged in
   const [viewedUser, setViewedUser] = useState(null); // someone else's profile, or null = me
   const [authReady, setAuthReady] = useState(false);
-  const [modal, setModal] = useState(null); // null | "login" | "signup" | "edit" | "support"
+  const [modal, setModal] = useState(null); // null | "login" | "signup" | "forgot" | "reset" | "edit" | "link" | "support"
   const urlReady = useRef(false); // false while we're reading the URL, so we don't overwrite it
 
   // login state
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY") setModal("reset"); // arrived from a password reset email
       setTimeout(async () => {
         setUser(await fetchProfile(session?.user));
         setAuthReady(true);
@@ -124,7 +128,13 @@ export default function App() {
         {
           label: g.name,
           content: (
-            <GameTab game={g} person={person} isOwn={isOwn} onClearViewed={viewedUser ? backToMe : null} />
+            <GameTab
+              game={g}
+              person={person}
+              isOwn={isOwn}
+              onClearViewed={viewedUser ? backToMe : null}
+              onLinkAccounts={() => setModal("link")}
+            />
           ),
         },
       ])
@@ -141,6 +151,7 @@ export default function App() {
         isOwn={isOwn}
         onOpenTab={setActiveTab}
         onEdit={() => setModal("edit")}
+        onLinkAccounts={() => setModal("link")}
         onLogout={handleLogout}
         onBackToMe={viewedUser ? backToMe : null}
       />
@@ -193,13 +204,25 @@ export default function App() {
       </footer>
 
       {modal === "login" && (
-        <LoginModal onLogin={handleSave} onClose={closeModal} onSwitchToSignup={() => setModal("signup")} />
+        <LoginModal
+          onLogin={handleSave}
+          onClose={closeModal}
+          onSwitchToSignup={() => setModal("signup")}
+          onForgotPassword={() => setModal("forgot")}
+        />
       )}
       {modal === "signup" && (
         <SignupModal onClose={closeModal} onSwitchToLogin={() => setModal("login")} />
       )}
+      {modal === "forgot" && (
+        <ForgotPasswordModal onClose={closeModal} onBackToLogin={() => setModal("login")} />
+      )}
+      {modal === "reset" && <ResetPasswordModal onClose={closeModal} />}
       {modal === "edit" && user && (
         <EditProfileModal user={user} onSave={handleSave} onClose={closeModal} />
+      )}
+      {modal === "link" && user && (
+        <LinkAccountsModal user={user} onSave={handleSave} onClose={closeModal} />
       )}
       {modal === "support" && <SupportModal user={user} onClose={closeModal} />}
     </div>
