@@ -4,8 +4,9 @@
   gap: 8px;
   padding: 8px 16px;
   border-radius: 999px;
-  background: #1b2328;
-  border: 1px solid transparent;
+  background: var(--surface-2);           /* was #1b2328 */
+  border-color: var(--brand);             /* in :focus-within, was #ff0000 */
+  color: var(--text);                     /* on the input, was #e6e6e6 */
   max-width: 400px;
   transition: box-shadow 0.2s, border-color 0.2s;
 }
@@ -42,16 +43,4 @@
   background: none;
   cursor: pointer;
   color: #888;
-}
-
-.player-results {
-  margin-top: 16px;
-  list-style: none;
-  padding: 0;
-  max-width: 600px;
-}
-
-.player-results li {
-  padding: 8px 0;
-  border-bottom: 1px solid #333;
 }
