@@ -1,0 +1,80 @@
+
+.stat-card {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  background-color: #090909;
+  /* Uses the same card art multiple times */
+  background-image: url('../public/12455094_4920488_2.jpg');
+  background-size: cover;
+  background-position: center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 1.5rem;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+/* Darkens center so stats can be seen */
+.stat-card::after {
+  content: "";
+  position: absolute;
+  inset: 14%;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.9) 42%, rgba(0, 0, 0, 0.35) 100%);
+  z-index: 1;
+}
+
+.card-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #b3b3b3;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+}
+
+.stat-sub {
+  font-size: 0.75rem;
+  color: #ff2a3c;
+  margin-top: 0.4rem;
+  font-weight: 600;
+}
+
+/* Rank Icon and Progress Bar */
+.rank-icon {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  margin-bottom: 0.4rem;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.25));
+}
+
+.rr-bar-bg {
+  width: 80%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 0.6rem auto 0.3rem auto;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.rr-bar-fill {
+  height: 100%;
+  background: #ff2a3c;
+}
