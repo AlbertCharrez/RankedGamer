@@ -15,6 +15,7 @@ import { fetchProfile, fetchProfileByUsername, logOut } from "./Data/accounts";
 import { games } from "./Data/games";
 
 const TAB_IDS = ["home", ...games.map((g) => g.id), "profile"];
+const DEFAULT_TITLE = "RankedGamer: Deadlock, CS2 & Marvel Rivals Stats";
 
 // "/deadlock" -> { tab: "deadlock" },  "/u/Albert/cs2" -> { tab: "cs2", username: "Albert" }
 function readUrl() {
@@ -77,18 +78,6 @@ export default function App() {
         urlReady.current = true;
       }
     };
-    // page title for the current tab / profile
-    useEffect(() => {
-      const game = games.find((g) => g.id === activeTab);
-      const who = viewedUser?.name ?? (activeTab === "profile" ? user?.name : null);
-
-      const parts = [];
-      if (who) parts.push(who);
-      if (game) parts.push(game.name);
-      if (!who && !game && activeTab === "profile") parts.push("Profile");
-
-      document.title = parts.length ? `${parts.join(" · ")} · RankedGamer` : "RankedGamer: Deadlock, CS2 & Marvel Rivals Stats";
-    }, [activeTab, viewedUser, user]);
 
     applyUrl();
     window.addEventListener("popstate", applyUrl);
@@ -101,6 +90,19 @@ export default function App() {
     const url = buildUrl(activeTab, viewedUser);
     if (url !== window.location.pathname) window.history.pushState(null, "", url);
   }, [activeTab, viewedUser]);
+
+  // page title for the current tab / profile
+  useEffect(() => {
+    const game = games.find((g) => g.id === activeTab);
+    const who = viewedUser?.name ?? (activeTab === "profile" ? user?.name : null);
+
+    const parts = [];
+    if (who) parts.push(who);
+    if (game) parts.push(game.name);
+    if (!who && !game && activeTab === "profile") parts.push("Profile");
+
+    document.title = parts.length ? `${parts.join(" · ")} · RankedGamer` : DEFAULT_TITLE;
+  }, [activeTab, viewedUser, user]);
 
   // the profile the tabs are showing: someone you clicked on, or yourself
   const person = viewedUser ?? user;
