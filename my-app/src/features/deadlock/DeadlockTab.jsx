@@ -1,17 +1,17 @@
 
 import { useEffect, useState } from "react";
-import DeadlockPlayerSearch from "../Components/DeadlockPlayerSearch";
+import DeadlockPlayerSearch from "./DeadlockPlayerSearch";
 import DeadlockLeaderboard, {
   DeadlockLeaderboardPreview
-} from "../Components/DeadlockLeaderboard";
-import DeadlockStats from "../Components/DeadlockStats";
-import RankComparison from "../Components/RankComparison";
+} from "./DeadlockLeaderboard";
+import DeadlockStats from "./DeadlockStats";
+import RankComparison from "../games/RankComparison";
 import {
   fetchMatchHistory,
   fetchHeroes,
   summarize,
   isWin
-} from "../Data/deadlock";
+} from "./deadlock";
 import "./DeadlockTab.css";
 
 export default function DeadlockTab({

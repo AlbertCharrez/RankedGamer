@@ -15,17 +15,13 @@ import ResetPasswordModal from "./features/auth/ResetPasswordModal";
 import Avatar from "./features/profile/Avatar";
 import EditProfileModal from "./features/profile/EditProfileModal";
 import LinkAccountsModal from "./features/profile/LinkAccountsModal";
-import { fetchProfile, fetchProfileByUsername, logOut } from "./features/profile/accounts";
-
-// games
-import { games } from "./features/games/games";
 
 // shared
 import SupportModal from "./components/SupportModal";
 import { supabase } from "./lib/supabaseClient";
-import { fetchProfile, fetchProfileByUsername, logOut } from "./Data/accounts";
-import { games } from "./Data/games";
-import DeadlockTab from "./Tabs/DeadlockTab";
+import { fetchProfile, fetchProfileByUsername, logOut } from "./features/profile/accounts";
+import { games } from "./features/games/games";
+import DeadlockTab from "./features/deadlock/DeadlockTab";
 
 const TAB_IDS = ["home", ...games.map((g) => g.id), "profile"];
 

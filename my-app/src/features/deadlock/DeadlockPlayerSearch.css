@@ -197,3 +197,102 @@
   .deadlock-player-result-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .deadlock-player-result-top { align-items: flex-start; flex-direction: column; }
 }
+
+/* Steam display-name search results */
+.deadlock-player-search-results {
+  margin-top: 18px;
+  padding: 16px;
+  background: var(--background, #10131b);
+  border: 1px solid var(--border, #303543);
+  border-radius: 8px;
+}
+
+.deadlock-player-search-results h3 {
+  margin: 0 0 5px;
+  font-size: 14px;
+}
+
+.deadlock-player-search-results > p {
+  margin: 0 0 12px;
+  color: var(--text-muted, #a5adbd);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.deadlock-player-search-option {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+  padding: 10px;
+  color: var(--text, #f4f5f8);
+  background: var(--surface, #171a23);
+  border: 1px solid var(--border, #303543);
+  border-radius: 7px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.deadlock-player-search-option + .deadlock-player-search-option {
+  margin-top: 8px;
+}
+
+.deadlock-player-search-option:hover {
+  border-color: var(--brand, #e0a33a);
+}
+
+.deadlock-player-search-option:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.deadlock-player-search-avatar {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: 6px;
+  background: var(--surface-2, #242936);
+}
+
+.deadlock-player-search-account {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.deadlock-player-search-account strong {
+  overflow: hidden;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.deadlock-player-search-account small {
+  color: var(--text-muted, #a5adbd);
+  font-size: 11px;
+}
+
+.deadlock-player-search-select {
+  color: var(--brand, #e0a33a);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+@media (max-width: 450px) {
+  .deadlock-player-search-results {
+    padding: 11px;
+  }
+
+  .deadlock-player-search-option {
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .deadlock-player-search-avatar {
+    width: 36px;
+    height: 36px;
+  }
+}
