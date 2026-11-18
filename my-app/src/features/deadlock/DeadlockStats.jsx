@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
-import { fetchMatchHistory, fetchHeroes, summarize, isWin } from "../Data/deadlock";
-import MatchSpotlight from "./MatchSpotlight";
+import { fetchMatchHistory, fetchHeroes, summarize, isWin, matchType, MATCH_TYPES } from "./deadlock";
+import MatchSpotlight from "../games/MatchSpotlight";
 
 const formatDuration = (s = 0) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 const formatDate = (unix) =>
   unix ? new Date(unix * 1000).toLocaleDateString(undefined, { month: "short", day: "numeric" }) : "";
 
-export default function DeadlockStats({ steamId, recentCount = 5 }) {
+export default function DeadlockStats({ steamId, recentCount = 5, refreshKey = 0, onLoaded }) {
   const [state, setState] = useState({ status: "loading" });
-  const [selectedId, setSelectedId] = useState(null); // null = newest match
+  const [mode, setMode] = useState("all");
+  const [selectedId, setSelectedId] = useState(null); // null = newest match in the current filter
 
   useEffect(() => {
     let cancelled = false;
@@ -16,13 +17,19 @@ export default function DeadlockStats({ steamId, recentCount = 5 }) {
     setSelectedId(null);
 
     Promise.all([fetchMatchHistory(steamId), fetchHeroes()])
-      .then(([matches, heroes]) => !cancelled && setState({ status: "ready", matches, heroes }))
+      .then(([matches, heroes]) => {
+        if (cancelled) return;
+        setState({ status: "ready", matches, heroes });
+        onLoaded?.(); // lets the panel show the real "last checked" time
+      })
       .catch((err) => !cancelled && setState({ status: "error", message: err.message }));
 
     return () => {
       cancelled = true;
     };
-  }, [steamId]);
+    // onLoaded is left out on purpose so a new function from the parent doesn't trigger a reload
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [steamId, refreshKey]);
 
   if (state.status === "loading") return <div className="stats-card muted">Loading Deadlock stats...</div>;
   if (state.status === "error") return <div className="stats-card form-error">{state.message}</div>;
@@ -38,13 +45,56 @@ export default function DeadlockStats({ steamId, recentCount = 5 }) {
     );
   }
 
-  const s = summarize(matches);
-  const recent = matches.slice(0, recentCount);
+  // how many matches of each type, for the filter buttons
+  const counts = { all: matches.length, ranked: 0, normal: 0, brawl: 0 };
+  for (const m of matches) counts[matchType(m)]++;
+
+  const filtered = mode === "all" ? matches : matches.filter((m) => matchType(m) === mode);
+  const modeLabel = MATCH_TYPES.find((t) => t.id === mode)?.label ?? "All";
+
+  const changeMode = (id) => {
+    setMode(id);
+    setSelectedId(null);
+  };
+
+  const filterBar = (
+    <div className="mode-filter" role="tablist">
+      {MATCH_TYPES.map((t) => (
+        <button
+          key={t.id}
+          type="button"
+          role="tab"
+          aria-selected={mode === t.id}
+          className={mode === t.id ? "mode-btn active" : "mode-btn"}
+          onClick={() => changeMode(t.id)}
+          disabled={counts[t.id] === 0 && t.id !== "all"}
+        >
+          {t.label} <span className="mode-count">{counts[t.id]}</span>
+        </button>
+      ))}
+    </div>
+  );
+
+  if (filtered.length === 0) {
+    return (
+      <div className="stats-card">
+        {filterBar}
+        <p className="muted">No {modeLabel} matches found yet.</p>
+      </div>
+    );
+  }
+
+  const s = summarize(filtered);
+  const recent = filtered.slice(0, recentCount);
   const selected = recent.find((m) => m.match_id === selectedId) ?? recent[0];
 
   return (
     <div className="stats-card">
-      <p className="stats-caption">Last {s.played} matches</p>
+      {filterBar}
+
+      <p className="stats-caption">
+        {modeLabel} · last {s.played} matches
+      </p>
 
       <div className="stats-grid">
         <div className="stat">
@@ -75,6 +125,7 @@ export default function DeadlockStats({ steamId, recentCount = 5 }) {
         {recent.map((m) => {
           const won = isWin(m);
           const active = m.match_id === selected.match_id;
+          const type = MATCH_TYPES.find((t) => t.id === matchType(m));
           return (
             <li key={m.match_id}>
               <button
@@ -86,6 +137,7 @@ export default function DeadlockStats({ steamId, recentCount = 5 }) {
                 <span className="match-hero">
                   {heroes[m.hero_id]?.icon && <img className="match-hero-icon" src={heroes[m.hero_id].icon} alt="" />}
                   {heroName(m.hero_id)}
+                  {mode === "all" && type && <span className="mode-tag">{type.label}</span>}
                 </span>
                 <span>{m.player_kills ?? 0} / {m.player_deaths ?? 0} / {m.player_assists ?? 0}</span>
                 <span className="muted">{formatDuration(m.match_duration_s)}</span>

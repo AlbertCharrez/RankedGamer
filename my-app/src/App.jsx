@@ -1,15 +1,27 @@
 import { useEffect, useRef, useState } from "react";
-import HomeTab from "./Tabs/HomeTab";
-import GameTab from "./Tabs/GameTab";
-import ProfileTab from "./Tabs/ProfileTab";
-import LoginModal from "./Components/LoginModal";
-import SignupModal from "./Components/SignupModal";
-import ForgotPasswordModal from "./Components/ForgotPasswordModal";
-import ResetPasswordModal from "./Components/ResetPasswordModal";
-import EditProfileModal from "./Components/EditProfileModal";
-import LinkAccountsModal from "./Components/LinkAccountsModal";
-import SupportModal from "./Components/SupportModal";
-import Avatar from "./Components/Avatar";
+
+// pages
+import HomeTab from "./pages/HomeTab";
+import GameTab from "./pages/GameTab";
+import ProfileTab from "./pages/ProfileTab";
+
+// auth
+import LoginModal from "./features/auth/LoginModal";
+import SignupModal from "./features/auth/SignupModal";
+import ForgotPasswordModal from "./features/auth/ForgotPasswordModal";
+import ResetPasswordModal from "./features/auth/ResetPasswordModal";
+
+// profile
+import Avatar from "./features/profile/Avatar";
+import EditProfileModal from "./features/profile/EditProfileModal";
+import LinkAccountsModal from "./features/profile/LinkAccountsModal";
+import { fetchProfile, fetchProfileByUsername, logOut } from "./features/profile/accounts";
+
+// games
+import { games } from "./features/games/games";
+
+// shared
+import SupportModal from "./components/SupportModal";
 import { supabase } from "./lib/supabaseClient";
 import { fetchProfile, fetchProfileByUsername, logOut } from "./Data/accounts";
 import { games } from "./Data/games";

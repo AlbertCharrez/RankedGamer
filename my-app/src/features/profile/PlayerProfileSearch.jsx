@@ -1,8 +1,8 @@
 import { useState } from "react";
-import SearchBubble from "./SearchBubble.jsx";
+import SearchBubble from "../../components/SearchBubble/SearchBubble.jsx";
 import Avatar from "./Avatar";
-import { searchAllPlayers } from "../Data/accounts";
-import { getGame } from "../Data/games";
+import { searchAllPlayers } from "./accounts.js";
+import { getGame } from "../games/games.js";
 
 export default function PlayerProfileSearch({ onOpenProfile }) {
   const [results, setResults] = useState(null); // null = not searched yet

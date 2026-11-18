@@ -1,6 +1,6 @@
 import { useState } from "react";
-import ModalBackdrop from "./ModalBackdrop";
-import { logIn } from "../Data/accounts";
+import ModalBackdrop from "../../components/ModalBackdrop";
+import { logIn } from "../profile/accounts";
 
 function friendlyError(err) {
   const msg = err?.message ?? "";

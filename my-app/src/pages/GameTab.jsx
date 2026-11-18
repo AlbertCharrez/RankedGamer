@@ -1,16 +1,8 @@
-import LinkedAccountBanner from "../Components/LinkedAccountBanner";
-import DeadlockStats from "../Components/DeadlockStats";
-import RankComparison from "../Components/RankComparison";
+import LinkedAccountBanner from "../features/profile/LinkedAccountBanner";
+import DeadlockPanel from "../features/deadlock/DeadlockPanel";
 
 export default function GameTab({ game, person, isOwn, onClearViewed, onLinkAccounts }) {
-  {showDeadlock ? (
-  <>
-    <DeadlockStats steamId={person.steamId} recentCount={10} />
-    <RankComparison steamId={person.steamId} />
-  </>
-) : game.id !== "deadlock" ? (
-  <p className="muted">Stats for {game.name} are coming soon.</p>
-) : null}
+  const showDeadlock = game.id === "deadlock" && person?.steamId;
 
   return (
     <div className="game-tab" style={{ "--accent": game.color }}>
@@ -24,7 +16,7 @@ export default function GameTab({ game, person, isOwn, onClearViewed, onLinkAcco
       <h1>{game.name}</h1>
 
       {showDeadlock ? (
-        <DeadlockStats steamId={person.steamId} recentCount={10} />
+        <DeadlockPanel steamId={person.steamId} recentCount={10} />
       ) : game.id !== "deadlock" ? (
         <p className="muted">Stats for {game.name} are coming soon.</p>
       ) : null}
