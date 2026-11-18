@@ -1,5 +1,5 @@
 import Avatar from "./Avatar";
-import { steamProfileUrl } from "../Data/accounts";
+import { steamProfileUrl } from "./accounts";
 
 export default function LinkedAccountBanner({ game, person, isOwn, onClear, onLinkAccounts }) {
   if (!person) {

@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
-import ModalBackdrop from "./ModalBackdrop";
-import GamePicker from "./GamePicker";
+import ModalBackdrop from "../../components/ModalBackdrop";
+import GamePicker from "../GamePicker";
 import Avatar from "./Avatar";
-import { updateProfile, resizeImage, isUsernameTaken, USERNAME_RE } from "../Data/accounts";
+import { updateProfile, resizeImage, isUsernameTaken, USERNAME_RE } from "./accounts";
 
 export default function EditProfileModal({ user, onSave, onClose }) {
   const fileInput = useRef(null);
