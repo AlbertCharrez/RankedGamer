@@ -1,8 +1,17 @@
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import DeadlockPlayerSearch from "../Components/DeadlockPlayerSearch";
 import DeadlockLeaderboard, {
   DeadlockLeaderboardPreview
 } from "../Components/DeadlockLeaderboard";
+import DeadlockStats from "../Components/DeadlockStats";
+import RankComparison from "../Components/RankComparison";
+import {
+  fetchMatchHistory,
+  fetchHeroes,
+  summarize,
+  isWin
+} from "../Data/deadlock";
 import "./DeadlockTab.css";
 
 export default function DeadlockTab({
@@ -13,7 +22,160 @@ export default function DeadlockTab({
 }) {
   const [selectedSection, setSelectedSection] = useState("overview");
 
-  // Logged-out landing screen
+  // Get the Steam ID connected to this user.
+  const steamId = user?.steamId;
+
+  // Store Deadlock match data for the dashboard.
+  const [deadlockData, setDeadlockData] = useState({
+    status: "loading",
+    matches: [],
+    heroes: {},
+    message: ""
+  });
+
+  // Fetch the player's matches and hero information.
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!steamId) {
+      setDeadlockData({
+        status: "unlinked",
+        matches: [],
+        heroes: {},
+        message: ""
+      });
+      return;
+    }
+
+    setDeadlockData({
+      status: "loading",
+      matches: [],
+      heroes: {},
+      message: ""
+    });
+
+    Promise.all([
+      fetchMatchHistory(steamId),
+      fetchHeroes()
+    ])
+      .then(([matches, heroes]) => {
+        if (cancelled) return;
+
+        setDeadlockData({
+          status: matches.length > 0 ? "ready" : "empty",
+          matches,
+          heroes,
+          message: ""
+        });
+      })
+      .catch((error) => {
+        if (cancelled) return;
+
+        setDeadlockData({
+          status: "error",
+          matches: [],
+          heroes: {},
+          message: error.message || "Unable to load Deadlock statistics."
+        });
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [steamId]);
+
+  // Calculate overall statistics when match data is available.
+  const matches = deadlockData.matches;
+  const heroes = deadlockData.heroes;
+
+  const playerStats =
+    deadlockData.status === "ready"
+      ? summarize(matches)
+      : null;
+
+  // Group matches by hero and calculate each hero's statistics.
+  const heroStats =
+    deadlockData.status === "ready"
+      ? Object.entries(
+          matches.reduce((grouped, match) => {
+            const heroId = match.hero_id;
+
+            if (!grouped[heroId]) {
+              grouped[heroId] = [];
+            }
+
+            grouped[heroId].push(match);
+            return grouped;
+          }, {})
+        )
+          .map(([heroId, heroMatches]) => {
+            const wins = heroMatches.filter(isWin).length;
+            const games = heroMatches.length;
+
+            const summary = summarize(heroMatches);
+
+            return {
+              heroId,
+              name: heroes[heroId]?.name || `Hero ${heroId}`,
+              games,
+              wins,
+              losses: games - wins,
+              winRate: games > 0 ? (wins / games) * 100 : 0,
+              avgKda: summary.avgKda
+            };
+          })
+          .sort((a, b) => b.games - a.games)
+      : [];
+
+  // Display the appropriate message when personal match data is unavailable.
+  const renderDataNotice = () => {
+    if (deadlockData.status === "loading") {
+      return (
+        <div className="deadlock-empty-card">
+          <span>⏳</span>
+          <h3>Loading Deadlock statistics...</h3>
+        </div>
+      );
+    }
+
+    if (deadlockData.status === "unlinked") {
+      return (
+        <div className="deadlock-empty-card">
+          <span>🔗</span>
+          <h3>Link a Steam account to view your statistics</h3>
+          <p>Your Deadlock match history will appear here once available.</p>
+        </div>
+      );
+    }
+
+    if (deadlockData.status === "empty") {
+      return (
+        <div className="deadlock-empty-card">
+          <span>🎮</span>
+          <h3>No Deadlock match data found</h3>
+          <p>
+            No match data was found for this Steam account yet.
+            If you've recently started playing, your matches may
+            take a while to appear.
+          </p>
+        </div>
+      );
+    }
+
+    if (deadlockData.status === "error") {
+      return (
+        <div className="deadlock-empty-card">
+          <span>⚠️</span>
+          <h3>Unable to load statistics</h3>
+          <p>{deadlockData.message}</p>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  // Logged-out landing screen.
   if (!isLoggedIn) {
     return (
       <div className="deadlock-landing">
@@ -25,73 +187,65 @@ export default function DeadlockTab({
           </div>
         </section>
 
-          <DeadlockPlayerSearch />
+        <DeadlockPlayerSearch />
 
-          {/* Landing Page Features */}
-          <div className="deadlock-landing-features">
-            <div className="deadlock-landing-feature">
-              <span className="deadlock-landing-feature-icon">📊</span>
-              <h3>Track Your Performance</h3>
-              <p>
-                View your win rates, K/D/A, match history,
-                and performance trends.
-              </p>
-            </div>
-
-            <div className="deadlock-landing-feature">
-              <span className="deadlock-landing-feature-icon">👥</span>
-              <h3>Discover Players</h3>
-              <p>
-                Search for other players and explore
-                their profiles and statistics.
-              </p>
-            </div>
-
-            <div className="deadlock-landing-feature">
-             <span className="deadlock-landing-feature-icon">🏆</span>
-             <h3>Climb the Leaderboards</h3>
-              <p>
-               Compare player rankings and see
-                where you stand.
-             </p>
-            </div>
-          </div>  
-
-          <div className="deadlock-landing-content">
+        <div className="deadlock-landing-features">
+          <div className="deadlock-landing-feature">
+            <span className="deadlock-landing-feature-icon">📊</span>
+            <h3>Track Your Performance</h3>
             <p>
-               Sign in to explore player profiles, hero statistics,
-             match history, and leaderboards.
+              View your win rates, K/D/A, match history,
+              and performance trends.
             </p>
           </div>
-          
-          <div className="deadlock-landing-buttons">
-            <button
-              className="deadlock-landing-login"
-              onClick={onLoginClick}
-            >
-              Log In
-            </button>
 
-            <button
-              className="deadlock-landing-signup"
-              onClick={onSignupClick}
-            >
-              Sign Up
-            </button>            
+          <div className="deadlock-landing-feature">
+            <span className="deadlock-landing-feature-icon">👥</span>
+            <h3>Discover Players</h3>
+            <p>
+              Search for other players and explore
+              their profiles and statistics.
+            </p>
           </div>
 
-          {/* Public leaderboard is available without signing in */}
-          <DeadlockLeaderboard />
+          <div className="deadlock-landing-feature">
+            <span className="deadlock-landing-feature-icon">🏆</span>
+            <h3>Climb the Leaderboards</h3>
+            <p>
+              Compare player rankings and see
+              where you stand.
+            </p>
+          </div>
+        </div>
+
+        <div className="deadlock-landing-content">
+          <p>
+            Sign in to explore player profiles, hero statistics,
+            match history, and leaderboards.
+          </p>
+        </div>
+
+        <div className="deadlock-landing-buttons">
+          <button
+            className="deadlock-landing-login"
+            onClick={onLoginClick}
+          >
+            Log In
+          </button>
+
+          <button
+            className="deadlock-landing-signup"
+            onClick={onSignupClick}
+          >
+            Sign Up
+          </button>
+        </div>
+
+        {/* Public leaderboard is available without signing in. */}
+        <DeadlockLeaderboard />
       </div>
     );
   }
-
-  // Placeholder hero cards until real game data is connected
-  const heroes = [
-    "Most Played Hero",
-    "Second Favorite",
-    "Third Favorite"
-  ];
 
   return (
     <div className="deadlock-page">
@@ -119,13 +273,15 @@ export default function DeadlockTab({
           <span className="deadlock-profile-label">
             RANKED GAMER ACCOUNT
           </span>
+
           <h2>{user?.name || "Player"}</h2>
+
           <p>Welcome to your Deadlock dashboard.</p>
         </div>
 
         <div className="deadlock-account-status">
           <span className="deadlock-status-dot"></span>
-          Deadlock account not linked
+          {steamId ? "Steam account linked" : "Steam account not linked"}
         </div>
       </section>
 
@@ -144,133 +300,163 @@ export default function DeadlockTab({
         <button
           className={selectedSection === "overview" ? "selected" : ""}
           onClick={() => setSelectedSection("overview")}
-        >Overview</button>
+        >
+          Overview
+        </button>
 
         <button
           className={selectedSection === "performance" ? "selected" : ""}
           onClick={() => setSelectedSection("performance")}
-        >Performance</button>
+        >
+          Performance
+        </button>
 
         <button
           className={selectedSection === "heroes" ? "selected" : ""}
           onClick={() => setSelectedSection("heroes")}
-        >Hero Stats</button>
+        >
+          Hero Stats
+        </button>
 
         <button
           className={selectedSection === "matches" ? "selected" : ""}
           onClick={() => setSelectedSection("matches")}
-        >Match History</button>
+        >
+          Match History
+        </button>
 
         <button
           className={selectedSection === "leaderboard" ? "selected" : ""}
           onClick={() => setSelectedSection("leaderboard")}
-        >Leaderboard</button>
+        >
+          Leaderboard
+        </button>
       </nav>
 
       {/* OVERVIEW */}
       {selectedSection === "overview" && (
         <section className="deadlock-content">
 
-          <div className="deadlock-section-heading">
-            <div>
-              <span className="deadlock-label">YOUR STATISTICS</span>
-              <h2>Player Overview</h2>
-            </div>
-
-            <button
-              className="deadlock-text-button"
-              onClick={() => setSelectedSection("performance")}
-            >
-              View All →
-            </button>
-          </div>
-
-          <div className="deadlock-stat-grid">
-
-            <div className="deadlock-stat-card">
-              <span className="deadlock-stat-icon">🏆</span>
-              <span>Current Rank</span>
-              <strong>--</strong>
-              <small>Your competitive rank</small>
-            </div>
-
-            <div className="deadlock-stat-card">
-              <span className="deadlock-stat-icon">📈</span>
-              <span>Win Rate</span>
-              <strong>--</strong>
-              <small>Percentage of matches won</small>
-            </div>
-
-            <div className="deadlock-stat-card">
-              <span className="deadlock-stat-icon">⚔️</span>
-              <span>K/D/A</span>
-              <strong>--</strong>
-              <small>Kills / Deaths / Assists</small>
-            </div>
-
-            <div className="deadlock-stat-card">
-              <span className="deadlock-stat-icon">🎮</span>
-              <span>Matches Played</span>
-              <strong>--</strong>
-              <small>Total games played</small>
-            </div>
-
-          </div>
-
-          {/* FAVORITE HEROES PREVIEW */}
-          <div className="deadlock-subsection">
-            <div className="deadlock-section-heading">
-              <div>
-                <span className="deadlock-label">YOUR FAVORITES</span>
-                <h2>Favorite Heroes</h2>
-              </div>
-
-              <button
-                className="deadlock-text-button"
-                onClick={() => setSelectedSection("heroes")}
-              >
-                View All →
-              </button>
-            </div>
-
-            <div className="deadlock-hero-grid">
-              {heroes.map((hero, index) => (
-                <div className="deadlock-hero-card" key={hero}>
-                  <div className="deadlock-hero-placeholder">
-                    <span>⚔️</span>
-                  </div>
-                  <h3>{hero}</h3>
-                  <p>Hero statistics coming soon</p>
+          {deadlockData.status === "ready" ? (
+            <>
+              <div className="deadlock-section-heading">
+                <div>
+                  <span className="deadlock-label">YOUR STATISTICS</span>
+                  <h2>Player Overview</h2>
                 </div>
-              ))}
-            </div>
-          </div>
 
-          {/* RECENT MATCHES PREVIEW */}
-          <div className="deadlock-subsection">
-            <div className="deadlock-section-heading">
-              <div>
-                <span className="deadlock-label">YOUR GAMEPLAY</span>
-                <h2>Recent Matches</h2>
+                <button
+                  className="deadlock-text-button"
+                  onClick={() => setSelectedSection("performance")}
+                >
+                  View All →
+                </button>
               </div>
 
-              <button
-                className="deadlock-text-button"
-                onClick={() => setSelectedSection("matches")}
-              >
-                View All →
-              </button>
-            </div>
+              <div className="deadlock-stat-grid">
+                <div className="deadlock-stat-card">
+                  <span className="deadlock-stat-icon">🏆</span>
+                  <span>Wins</span>
+                  <strong>{playerStats.wins}</strong>
+                  <small>Total matches won</small>
+                </div>
 
-            <div className="deadlock-empty-card">
-              <span>🎮</span>
-              <h3>No match history yet</h3>
-            </div>
-          </div>
+                <div className="deadlock-stat-card">
+                  <span className="deadlock-stat-icon">📈</span>
+                  <span>Win Rate</span>
+                  <strong>{playerStats.winRate.toFixed(1)}%</strong>
+                  <small>Percentage of matches won</small>
+                </div>
+
+                <div className="deadlock-stat-card">
+                  <span className="deadlock-stat-icon">⚔️</span>
+                  <span>Average KDA</span>
+                  <strong>{playerStats.avgKda.toFixed(2)}</strong>
+                  <small>Kills, deaths, and assists</small>
+                </div>
+
+                <div className="deadlock-stat-card">
+                  <span className="deadlock-stat-icon">🎮</span>
+                  <span>Matches Played</span>
+                  <strong>{matches.length}</strong>
+                  <small>Matches found for this account</small>
+                </div>
+              </div>
+
+              {/* FAVORITE HEROES PREVIEW */}
+              <div className="deadlock-subsection">
+                <div className="deadlock-section-heading">
+                  <div>
+                    <span className="deadlock-label">YOUR FAVORITES</span>
+                    <h2>Favorite Heroes</h2>
+                  </div>
+
+                  <button
+                    className="deadlock-text-button"
+                    onClick={() => setSelectedSection("heroes")}
+                  >
+                    View All →
+                  </button>
+                </div>
+
+                <div className="deadlock-hero-grid">
+                  {heroStats.slice(0, 3).map((hero) => (
+                    <div className="deadlock-hero-card" key={hero.heroId}>
+                      <div className="deadlock-hero-placeholder">
+                        <span>⚔️</span>
+                      </div>
+
+                      <h3>{hero.name}</h3>
+                      <p>{hero.games} matches played</p>
+                      <p>{hero.winRate.toFixed(1)}% win rate</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* RECENT MATCHES PREVIEW */}
+              <div className="deadlock-subsection">
+                <div className="deadlock-section-heading">
+                  <div>
+                    <span className="deadlock-label">YOUR GAMEPLAY</span>
+                    <h2>Recent Matches</h2>
+                  </div>
+
+                  <button
+                    className="deadlock-text-button"
+                    onClick={() => setSelectedSection("matches")}
+                  >
+                    View All →
+                  </button>
+                </div>
+
+                <div className="deadlock-recent-matches">
+                  {matches.slice(0, 5).map((match) => (
+                    <div className="deadlock-recent-match" key={match.match_id}>
+                      <strong>
+                        {heroes[match.hero_id]?.name || `Hero ${match.hero_id}`}
+                      </strong>
+
+                      <span className={isWin(match) ? "match-win" : "match-loss"}>
+                        {isWin(match) ? "Victory" : "Defeat"}
+                      </span>
+
+                      <span>
+                        {match.match_duration
+                          ? `${Math.floor(match.match_duration / 60)} min`
+                          : "Duration unavailable"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : (
+            renderDataNotice()
+          )}
 
           {/* LEADERBOARD PREVIEW */}
           <div className="deadlock-subsection">
-
             <div className="deadlock-section-heading">
               <div>
                 <span className="deadlock-label">TOP PLAYERS</span>
@@ -285,7 +471,7 @@ export default function DeadlockTab({
               </button>
             </div>
 
-          <DeadlockLeaderboardPreview />
+            <DeadlockLeaderboardPreview />
           </div>
 
         </section>
@@ -299,26 +485,34 @@ export default function DeadlockTab({
             <div>
               <span className="deadlock-label">CHARACTER PERFORMANCE</span>
               <h2>Hero Statistics</h2>
+              <p>Statistics for each hero you've played.</p>
             </div>
           </div>
 
-          <div className="deadlock-hero-grid">
-            {heroes.map((hero) => (
-              <div className="deadlock-hero-card" key={hero}>
-                <div className="deadlock-hero-placeholder">
-                  <span>⚔️</span>
+          {deadlockData.status === "ready" ? (
+            <div className="deadlock-hero-grid">
+              {heroStats.map((hero) => (
+                <div className="deadlock-hero-card" key={hero.heroId}>
+                  <div className="deadlock-hero-placeholder">
+                    <span>⚔️</span>
+                  </div>
+
+                  <h3>{hero.name}</h3>
+                  <p>Games played: {hero.games}</p>
+                  <p>Wins: {hero.wins}</p>
+                  <p>Losses: {hero.losses}</p>
+                  <p>Win rate: {hero.winRate.toFixed(1)}%</p>
+                  <p>Average KDA: {hero.avgKda.toFixed(2)}</p>
                 </div>
-                <h3>{hero}</h3>
-                <p>Games played: --</p>
-                <p>Win rate: --</p>
-                <p>K/D/A: --</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            renderDataNotice()
+          )}
 
         </section>
       )}
-      
+
       {/* PERFORMANCE */}
       {selectedSection === "performance" && (
         <section className="deadlock-content">
@@ -331,115 +525,56 @@ export default function DeadlockTab({
                 Track your statistics and monitor your improvement over time.
               </p>
             </div>
-
-            <span className="deadlock-coming-soon">
-              STATS PENDING
-            </span>
           </div>
 
-          {/* PERFORMANCE STATISTICS */}
-          <div className="deadlock-stat-grid">
+          {deadlockData.status === "ready" ? (
+            <>
+              <div className="deadlock-stat-grid">
+                <div className="deadlock-stat-card">
+                  <span className="deadlock-stat-icon">📈</span>
+                  <span>Win Rate</span>
+                  <strong>{playerStats.winRate.toFixed(1)}%</strong>
+                  <small>Percentage of matches won</small>
+                </div>
 
-            <div className="deadlock-stat-card">
-              <span className="deadlock-stat-icon">📈</span>
-              <span>Win Rate</span>
-              <strong>--</strong>
-              <small>Percentage of matches won</small>
-            </div>
+                <div className="deadlock-stat-card">
+                  <span className="deadlock-stat-icon">⚔️</span>
+                  <span>Average KDA</span>
+                  <strong>{playerStats.avgKda.toFixed(2)}</strong>
+                  <small>Kills, deaths, and assists</small>
+                </div>
 
-            <div className="deadlock-stat-card">
-              <span className="deadlock-stat-icon">⚔️</span>
-              <span>K/D/A</span>
-              <strong>--</strong>
-              <small>Kills / Deaths / Assists</small>
-            </div>
+                <div className="deadlock-stat-card">
+                  <span className="deadlock-stat-icon">🏆</span>
+                  <span>Wins</span>
+                  <strong>{playerStats.wins}</strong>
+                  <small>Total matches won</small>
+                </div>
 
-            <div className="deadlock-stat-card">
-              <span className="deadlock-stat-icon">🎯</span>
-              <span>K/D Ratio</span>
-              <strong>--</strong>
-              <small>Kills compared to deaths</small>
-            </div>
-
-            <div className="deadlock-stat-card">
-              <span className="deadlock-stat-icon">🏆</span>
-              <span>Wins</span>
-              <strong>--</strong>
-              <small>Total matches won</small>
-            </div>
-
-          </div>
-
-          {/* PERFORMANCE CHART */}
-          <div className="deadlock-performance-panel">
-            <div className="deadlock-performance-heading">
-              <div>
-                <h3>Performance Trends</h3>
-                <p>Track your win rate and K/D/A over time.</p>
-              </div>
-              <span className="deadlock-chart-period">ALL TIME</span>
-            </div>
-
-            <div className="deadlock-chart-placeholder">
-              <div className="deadlock-chart-grid">
-                <span>100%</span>
-                <span>75%</span>
-                <span>50%</span>
-                <span>25%</span>
-                <span>0%</span>
+                <div className="deadlock-stat-card">
+                  <span className="deadlock-stat-icon">🎮</span>
+                  <span>Losses</span>
+                  <strong>{playerStats.losses}</strong>
+                  <small>Total matches lost</small>
+                </div>
               </div>
 
-              <div className="deadlock-chart-empty">
-                <span>📊</span>
-                <h3>Performance data unavailable</h3>
-                <p>
-                  Your performance chart will appear here once your
-                  Deadlock statistics are connected.
-                </p>
-                <strong>--</strong>
+              <div className="deadlock-subsection">
+                <div className="deadlock-section-heading">
+                  <div>
+                    <h2>Rank Comparison</h2>
+                    <p className="deadlock-performance-description">
+                      Compare your performance with players in your rank.
+                    </p>
+                  </div>
+                </div>
+
+                <RankComparison steamId={steamId} />
               </div>
-            </div>
-          </div>
-
-          {/* ADDITIONAL STATISTICS */}
-          <div className="deadlock-subsection">
-            <div className="deadlock-section-heading">
-              <div>
-                <h2>Additional Statistics</h2>
-                <p className="deadlock-performance-description">
-                  More details about your overall gameplay.
-                </p>
-              </div>
-            </div>
-
-            <div className="deadlock-stat-grid">
-
-              <div className="deadlock-stat-card">
-                <span>Average Kills</span>
-                <strong>--</strong>
-                <small>Per match</small>
-              </div>
-
-              <div className="deadlock-stat-card">
-                <span>Average Deaths</span>
-                <strong>--</strong>
-                <small>Per match</small>
-              </div>
-
-              <div className="deadlock-stat-card">
-                <span>Average Assists</span>
-                <strong>--</strong>
-                <small>Per match</small>
-              </div>
-
-              <div className="deadlock-stat-card">
-                <span>Win / Loss</span>
-                <strong>--</strong>
-                <small>Match record</small>
-              </div>
-
-            </div>
-          </div>
+            </>
+          ) : (
+            renderDataNotice()
+          )}
 
         </section>
       )}
@@ -455,14 +590,14 @@ export default function DeadlockTab({
             </div>
           </div>
 
-          <div className="deadlock-empty-card">
-            <span>🕹️</span>
-            <h3>Your matches will appear here</h3>
-            <p>
-              View your wins, losses, heroes played, K/D/A,
-              and match duration.
-            </p>
-          </div>
+          {deadlockData.status === "ready" ? (
+            <DeadlockStats
+              steamId={steamId}
+              recentCount={20}
+            />
+          ) : (
+            renderDataNotice()
+          )}
 
         </section>
       )}
