@@ -1,5 +1,5 @@
-import LinkedAccountBanner from "../Components/LinkedAccountBanner";
-import DeadlockPanel from "../../Components/deadlock";
+import LinkedAccountBanner from "../features/profile/LinkedAccountBanner";
+import DeadlockPanel from "../features/deadlock/DeadlockPanel";
 
 export default function GameTab({ game, person, isOwn, onClearViewed, onLinkAccounts }) {
   const showDeadlock = game.id === "deadlock" && person?.steamId;

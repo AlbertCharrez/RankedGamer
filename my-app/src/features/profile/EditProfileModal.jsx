@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import ModalBackdrop from "../../components/ModalBackdrop";
-import GamePicker from "../GamePicker";
+import GamePicker from "../../features/games/GamePicker";
 import Avatar from "./Avatar";
 import { updateProfile, resizeImage, isUsernameTaken, USERNAME_RE } from "./accounts";
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchMatchHistory, fetchHeroes, summarize, isWin, matchType, MATCH_TYPES } from "./deadlock";
-import MatchSpotlight from "../MatchSpotlight";
+import MatchSpotlight from "../games/MatchSpotlight";
 
 const formatDuration = (s = 0) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 const formatDate = (unix) =>

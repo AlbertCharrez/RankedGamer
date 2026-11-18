@@ -1,6 +1,6 @@
-import { games } from "../Data/games";
-import GameCard from "../Components/GameCard";
-import PlayerProfileSearch from "../Components/PlayerProfileSearch";
+import { games } from "../features/games/games";
+import GameCard from "../features/games/GameCard";
+import PlayerProfileSearch from "../features/profile/PlayerProfileSearch";
 
 export default function HomeTab({ onOpenTab, onOpenProfile }) {
   return (

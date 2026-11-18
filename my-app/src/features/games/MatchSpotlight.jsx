@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchMatchMetadata, fetchSteamNames, toAccountId, TEAMS, teamIndex, isWin } from "./deadlock/deadlock";
+import { fetchMatchMetadata, fetchSteamNames, toAccountId, TEAMS, teamIndex, isWin } from "../deadlock/deadlock";
 
 const clock = (s = 0) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { games } from "../games/games";
-import DeadlockPanel from "./DeadlockPanel";
+import DeadlockPanel from "../deadlock/DeadlockPanel";
 
 export default function ProfileGameStats({ user, isOwn, onLinkAccounts }) {
   const myGames = games.filter((g) => user.games.includes(g.id));

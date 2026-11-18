@@ -8,7 +8,7 @@ import {
   COMPARE_METRICS,
   COMPARE_DAYS,
   PLAYER_DAYS,
-} from "./deadlock/deadlock";
+} from "../deadlock/deadlock";
 
 const SOLID_SAMPLE = 10; // below this, numbers are labelled an early estimate
 

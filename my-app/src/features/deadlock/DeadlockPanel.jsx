@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { clearPlayerCache, refreshAvailableAt, lastFetchedAt } from "./deadlock";
 import DeadlockStats from "./DeadlockStats";
-import RankComparison from "../RankComparison";
+import RankComparison from "../games/RankComparison";
 
 // 272 seconds -> "4:32"
 const countdown = (ms) => {

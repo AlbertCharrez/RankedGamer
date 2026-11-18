@@ -1,4 +1,4 @@
-import { games } from "../Data/games";
+import { games } from "../../features/games/games";
 
 export default function GamePicker({ picked, setPicked }) {
   const toggle = (id) =>

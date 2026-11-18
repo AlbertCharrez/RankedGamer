@@ -1,8 +1,8 @@
-import { games } from "../Data/games";
-import { steamProfileUrl } from "../Data/accounts";
-import Avatar from "../features/Avatar";
-import GameCard from "../features/GameCard";
-import ProfileGameStats from "../features/ProfileGameStats";
+import { games } from "../features/games/games";
+import { steamProfileUrl } from "../features/profile/accounts";
+import Avatar from "../features/profile/Avatar";
+import GameCard from "../features/games/GameCard";
+import ProfileGameStats from "../features/profile/ProfileGameStats";
 
 export default function ProfileTab({ user, isOwn, onOpenTab, onEdit, onLinkAccounts, onLogout, onBackToMe }) {
   const myGames = games.filter((g) => user.games.includes(g.id));
