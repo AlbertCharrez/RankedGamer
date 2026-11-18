@@ -812,3 +812,54 @@
     font-size: 14px;
   }
 }
+
+
+/* Landing page spacing refinement */
+.deadlock-landing {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.deadlock-landing-banner {
+  min-height: 170px;
+  margin-bottom: 20px;
+}
+
+.deadlock-landing-features {
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.deadlock-landing-feature {
+  padding: 20px 16px;
+}
+
+.deadlock-landing-feature-icon {
+  font-size: 26px;
+  margin-bottom: 9px;
+}
+
+.deadlock-landing-content {
+  max-width: 720px;
+  margin: 20px auto 0;
+}
+
+.deadlock-landing-content p {
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.deadlock-landing-buttons {
+  margin-top: 22px;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 700px) {
+  .deadlock-landing-banner {
+    min-height: 145px;
+  }
+  .deadlock-landing-features {
+    margin-top: 22px;
+  }
+}

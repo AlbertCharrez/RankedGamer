@@ -1,5 +1,8 @@
 import { useState } from "react";
 import DeadlockPlayerSearch from "../Components/DeadlockPlayerSearch";
+import DeadlockLeaderboard, {
+  DeadlockLeaderboardPreview
+} from "../Components/DeadlockLeaderboard";
 import "./DeadlockTab.css";
 
 export default function DeadlockTab({
@@ -22,14 +25,45 @@ export default function DeadlockTab({
           </div>
         </section>
 
-        <DeadlockPlayerSearch />
+          <DeadlockPlayerSearch />
 
-        <div className="deadlock-landing-content">
-          <p>
-            Sign in to explore player profiles, hero statistics,
-            match history, and leaderboards.
-          </p>
+          {/* Landing Page Features */}
+          <div className="deadlock-landing-features">
+            <div className="deadlock-landing-feature">
+              <span className="deadlock-landing-feature-icon">📊</span>
+              <h3>Track Your Performance</h3>
+              <p>
+                View your win rates, K/D/A, match history,
+                and performance trends.
+              </p>
+            </div>
 
+            <div className="deadlock-landing-feature">
+              <span className="deadlock-landing-feature-icon">👥</span>
+              <h3>Discover Players</h3>
+              <p>
+                Search for other players and explore
+                their profiles and statistics.
+              </p>
+            </div>
+
+            <div className="deadlock-landing-feature">
+             <span className="deadlock-landing-feature-icon">🏆</span>
+             <h3>Climb the Leaderboards</h3>
+              <p>
+               Compare player rankings and see
+                where you stand.
+             </p>
+            </div>
+          </div>  
+
+          <div className="deadlock-landing-content">
+            <p>
+               Sign in to explore player profiles, hero statistics,
+             match history, and leaderboards.
+            </p>
+          </div>
+          
           <div className="deadlock-landing-buttons">
             <button
               className="deadlock-landing-login"
@@ -43,47 +77,11 @@ export default function DeadlockTab({
               onClick={onSignupClick}
             >
               Sign Up
-            </button>
+            </button>            
           </div>
 
-          {/* Landing Page Features */}
-          <div className="deadlock-landing-features">
-            <div className="deadlock-landing-feature">
-              <span className="deadlock-landing-feature-icon">📊</span>
-              <h3>Track Your Performance</h3>
-              <p>
-                View your win rates, K/D/A, match history,
-                and performance trends.
-              </p>
-          </div>
-
-          <div className="deadlock-landing-feature">
-            <span className="deadlock-landing-feature-icon">👥</span>
-            <h3>Discover Players</h3>
-            <p>
-              Search for other players and explore
-              their profiles and statistics.
-            </p>
-          </div>
-
-          <div className="deadlock-landing-feature">
-            <span className="deadlock-landing-feature-icon">🏆</span>
-            <h3>Climb the Leaderboards</h3>
-            <p>
-              Compare player rankings and see
-              where you stand.
-            </p>
-          </div>
-
-          </div>
-
-          {/* Development Disclaimer */}
-          <p className="deadlock-landing-disclaimer">
-            Ranked Gamer is a community stats and player-tracking
-            platform. Some features and statistics are currently
-            under development.
-          </p>
-        </div>
+          {/* Public leaderboard is available without signing in */}
+          <DeadlockLeaderboard />
       </div>
     );
   }
@@ -287,60 +285,7 @@ export default function DeadlockTab({
               </button>
             </div>
 
-            <div className="deadlock-leaderboard-preview">
-
-              {/* FIRST PLACE */}
-              <div className="deadlock-leaderboard-player">
-                <div className="deadlock-leaderboard-rank first">
-                  #1
-                </div>
-
-                <div className="deadlock-leaderboard-player-info">
-                  <strong>Top Player</strong>
-                  <span>Player profile</span>
-                </div>
-
-                <div className="deadlock-leaderboard-player-stat">
-                  <span>Rank</span>
-                  <strong>--</strong>
-                </div>
-              </div>
-
-              {/* SECOND PLACE */}
-              <div className="deadlock-leaderboard-player">
-                <div className="deadlock-leaderboard-rank">
-                  #2
-                </div>
-
-                <div className="deadlock-leaderboard-player-info">
-                  <strong>Second Player</strong>
-                  <span>Player profile</span>
-                </div>
-
-                <div className="deadlock-leaderboard-player-stat">
-                  <span>Rank</span>
-                  <strong>--</strong>
-                </div>
-              </div>
-
-              {/* THIRD PLACE */}
-              <div className="deadlock-leaderboard-player">
-                <div className="deadlock-leaderboard-rank">
-                  #3
-                </div>
-
-                <div className="deadlock-leaderboard-player-info">
-                  <strong>Third Player</strong>
-                  <span>Player profile</span>
-                </div>
-
-                <div className="deadlock-leaderboard-player-stat">
-                  <span>Rank</span>
-                  <strong>--</strong>
-                </div>
-              </div>
-
-            </div>
+          <DeadlockLeaderboardPreview />
           </div>
 
         </section>
@@ -522,26 +467,10 @@ export default function DeadlockTab({
         </section>
       )}
 
-      {/* LEADERBOARD */}
+      {/* PUBLIC LEADERBOARD */}
       {selectedSection === "leaderboard" && (
         <section className="deadlock-content">
-
-          <div className="deadlock-section-heading">
-            <div>
-              <span className="deadlock-label">COMPETE WITH OTHERS</span>
-              <h2>Deadlock Leaderboard</h2>
-            </div>
-          </div>
-
-          <div className="deadlock-empty-card">
-            <span>🏆</span>
-            <h3>Player rankings coming soon</h3>
-            <p>
-              See how you compare with other Deadlock players
-              on Ranked Gamer.
-            </p>
-          </div>
-
+          <DeadlockLeaderboard />
         </section>
       )}
 
