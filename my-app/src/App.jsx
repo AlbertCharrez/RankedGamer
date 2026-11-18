@@ -13,6 +13,7 @@ import Avatar from "./Components/Avatar";
 import { supabase } from "./lib/supabaseClient";
 import { fetchProfile, fetchProfileByUsername, logOut } from "./Data/accounts";
 import { games } from "./Data/games";
+import DeadlockTab from "./Tabs/DeadlockTab";
 
 const TAB_IDS = ["home", ...games.map((g) => g.id), "profile"];
 

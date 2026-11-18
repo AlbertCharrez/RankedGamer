@@ -1,6 +1,6 @@
 import { useState } from "react";
-import PlayerSearch from "../Components/PlayerSearch";
-import "./Deadlock.css";
+import DeadlockPlayerSearch from "../Components/DeadlockPlayerSearch";
+import "./DeadlockTab.css";
 
 export default function DeadlockTab({
   isLoggedIn,
@@ -14,10 +14,17 @@ export default function DeadlockTab({
   if (!isLoggedIn) {
     return (
       <div className="deadlock-landing">
+        <section className="deadlock-landing-banner">
+          <div>
+            <p className="deadlock-label">RANKED GAMER</p>
+            <h1>DEADLOCK</h1>
+            <p>Track your performance. Climb the ranks.</p>
+          </div>
+        </section>
+
+        <DeadlockPlayerSearch />
+
         <div className="deadlock-landing-content">
-          <p className="deadlock-label">RANKED GAMER</p>
-          <h1>DEADLOCK</h1>
-          <p>Track your performance. Climb the ranks.</p>
           <p>
             Sign in to explore player profiles, hero statistics,
             match history, and leaderboards.
@@ -131,7 +138,7 @@ export default function DeadlockTab({
           <p>Search for other players and explore their profiles.</p>
         </div>
 
-        <PlayerSearch game="deadlock" />
+        <DeadlockPlayerSearch />
       </section>
 
       {/* NAVIGATION */}

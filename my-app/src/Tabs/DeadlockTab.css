@@ -362,33 +362,48 @@
 
 /* Logged-out landing screen */
 .deadlock-landing {
-  min-height: 75vh;
+  width: 100%;
+  padding-bottom: 45px;
+}
+
+/* Smaller standalone banner above the landing content */
+.deadlock-landing-banner {
+  position: relative;
+  overflow: hidden;
+  min-height: 190px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 40px 20px;
+  padding: 30px 40px;
+  margin-bottom: 24px;
   background:
-    linear-gradient(
-      rgba(10, 12, 18, 0.65),
-      rgba(10, 12, 18, 0.85)
-    ),
+    linear-gradient(90deg, rgba(10, 12, 18, 0.92), rgba(10, 12, 18, 0.35)),
     url("/deadlock.png");
   background-size: cover;
-  background-position: center;
+  background-position: top;
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--brand);
   border-radius: 12px;
+}
+
+.deadlock-landing-banner h1 {
+  color: white;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 900;
+  letter-spacing: 4px;
+  margin: 8px 0;
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.7);
+}
+
+.deadlock-landing-banner p:not(.deadlock-label) {
+  color: #d1d5df;
+  margin: 0;
 }
 
 .deadlock-landing-content {
   width: 100%;
   max-width: 900px;
-}
-
-.deadlock-landing-content h1 {
-  font-size: clamp(3rem, 8vw, 6rem);
-  font-weight: 900;
-  margin: 5px 0;
+  margin: 0 auto;
+  text-align: center;
 }
 
 .deadlock-landing-content p {
@@ -638,6 +653,11 @@
 /* Mobile Landing Page */
 
 @media (max-width: 700px) {
+  .deadlock-landing-banner {
+    min-height: 150px;
+    padding: 25px;
+  }
+
   .deadlock-landing-features {
     grid-template-columns: 1fr;
     max-width: 420px;

@@ -1,0 +1,199 @@
+.deadlock-player-search {
+  width: 100%;
+  margin: 24px auto 30px;
+  padding: 24px;
+  text-align: left;
+  background: var(--surface, #171a23);
+  border: 1px solid var(--border, #303543);
+  border-radius: 12px;
+  color: var(--text, #f4f5f8);
+}
+
+.deadlock-player-search-heading h2 {
+  margin: 5px 0 6px;
+  color: var(--text, #f4f5f8);
+  font-size: 1.35rem;
+}
+
+.deadlock-player-search-heading p,
+.deadlock-player-search-hint {
+  margin: 0;
+  color: var(--text-muted, #a5adbd);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.deadlock-player-search-eyebrow {
+  color: var(--brand, #e0a33a);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.deadlock-player-search-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 7px 8px 7px 14px;
+  background: var(--background, #10131b);
+  border: 1px solid var(--border, #303543);
+  border-radius: 8px;
+}
+
+.deadlock-player-search-icon {
+  color: var(--text-muted, #a5adbd);
+  font-size: 25px;
+  line-height: 1;
+}
+
+.deadlock-player-search-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 2px;
+  color: var(--text, #f4f5f8);
+  background: transparent;
+  border: 0;
+  outline: none;
+  font: inherit;
+  font-size: 14px;
+}
+
+.deadlock-player-search-form input::placeholder {
+  color: var(--text-muted, #8d96a8);
+}
+
+.deadlock-player-search-submit {
+  padding: 11px 20px;
+  color: #fff;
+  background: var(--brand, #b77a27);
+  border: 0;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.deadlock-player-search-submit:disabled {
+  cursor: wait;
+  opacity: .65;
+}
+
+.deadlock-player-search-clear {
+  padding: 4px 8px;
+  color: var(--text-muted, #a5adbd);
+  background: transparent;
+  border: 0;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.deadlock-player-search-hint {
+  margin-top: 9px;
+  font-size: 11px;
+}
+
+.deadlock-player-search-error {
+  margin: 14px 0 0;
+  color: #ff8c8c;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.deadlock-player-search-result {
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border, #303543);
+}
+
+.deadlock-player-result-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.deadlock-player-result-top h3 {
+  margin: 5px 0;
+  font-size: 18px;
+}
+
+.deadlock-player-result-top a {
+  color: var(--brand, #e0a33a);
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.deadlock-player-result-rank {
+  padding: 7px 10px;
+  color: var(--text-muted, #a5adbd);
+  background: rgba(255,255,255,.05);
+  border: 1px solid var(--border, #303543);
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+.deadlock-player-result-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.deadlock-player-result-stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 13px;
+  background: rgba(255,255,255,.035);
+  border: 1px solid var(--border, #303543);
+  border-radius: 7px;
+}
+
+.deadlock-player-result-stats span {
+  color: var(--text-muted, #a5adbd);
+  font-size: 11px;
+}
+
+.deadlock-player-result-stats strong {
+  font-size: 20px;
+}
+
+.deadlock-player-result-matches {
+  margin-top: 20px;
+}
+
+.deadlock-player-result-matches h4 {
+  margin: 0 0 10px;
+  font-size: 13px;
+}
+
+.deadlock-player-result-match {
+  display: grid;
+  grid-template-columns: 55px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 2px;
+  border-top: 1px solid var(--border, #303543);
+  font-size: 12px;
+}
+
+.deadlock-player-match-outcome {
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.deadlock-player-match-outcome.is-win { color: #69c995; }
+.deadlock-player-match-outcome.is-loss { color: #e68181; }
+.deadlock-player-match-hero { font-weight: 700; }
+.deadlock-player-match-kda { color: var(--text-muted, #a5adbd); font-variant-numeric: tabular-nums; }
+.deadlock-player-search-empty { color: var(--text-muted, #a5adbd); font-size: 13px; }
+
+@media (max-width: 600px) {
+  .deadlock-player-search { padding: 17px; }
+  .deadlock-player-search-form { flex-wrap: wrap; }
+  .deadlock-player-search-form input { flex-basis: calc(100% - 45px); }
+  .deadlock-player-search-submit { width: 100%; }
+  .deadlock-player-result-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .deadlock-player-result-top { align-items: flex-start; flex-direction: column; }
+}
