@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ModalBackdrop from "../../Components/ModalBackdrop";
+import ModalBackdrop from "../../components/ModalBackdrop";
 import { sendPasswordReset } from "../profile/accounts";
 
 export default function ForgotPasswordModal({ onClose, onBackToLogin }) {

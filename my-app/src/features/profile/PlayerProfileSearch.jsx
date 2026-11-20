@@ -1,5 +1,5 @@
 import { useState } from "react";
-import SearchBubble from "../../Components/SearchBubble/SearchBubble.jsx";
+import SearchBubble from "../../components/SearchBubble/SearchBubble.jsx";
 import Avatar from "./Avatar";
 import { searchAllPlayers } from "./accounts.js";
 import { getGame } from "../games/games.js";

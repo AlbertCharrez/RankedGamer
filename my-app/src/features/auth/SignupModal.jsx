@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ModalBackdrop from "../../Components/ModalBackdrop";
+import ModalBackdrop from "../../components/ModalBackdrop";
 import GamePicker from "../../features/games/GamePicker";
 import { isUsernameTaken, signUp, USERNAME_RE } from "../profile/accounts";
 
