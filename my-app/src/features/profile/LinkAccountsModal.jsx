@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ModalBackdrop from "../../components/ModalBackdrop";
+import ModalBackdrop from "../../Components/ModalBackdrop";
 import { updateProfile, parseSteamId, RIVALS_UID_RE } from "./accounts";
 
 function friendlyError(err) {

@@ -21,7 +21,7 @@ import { fetchProfile, fetchProfileByUsername, logOut } from "./features/profile
 import { games } from "./features/games/games";
 
 // shared
-import SupportModal from "./components/SupportModal";
+import SupportModal from "./Components/SupportModal";
 import { supabase } from "./lib/supabaseClient";
 
 const TAB_IDS = ["home", ...games.map((g) => g.id), "profile"];

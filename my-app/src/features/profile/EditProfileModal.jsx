@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import ModalBackdrop from "../../components/ModalBackdrop";
+import ModalBackdrop from "../../Components/ModalBackdrop";
 import GamePicker from "../../features/games/GamePicker";
 import Avatar from "./Avatar";
 import { updateProfile, resizeImage, isUsernameTaken, USERNAME_RE } from "./accounts";

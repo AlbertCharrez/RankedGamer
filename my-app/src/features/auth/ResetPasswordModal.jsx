@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ModalBackdrop from "../../components/ModalBackdrop";
+import ModalBackdrop from "../../Components/ModalBackdrop";
 import { updatePassword } from "../profile/accounts";
 
 export default function ResetPasswordModal({ onClose }) {
