@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ModalBackdrop from "./ModalBackdrop";
+import ModalBackdrop from "../components/ModalBackdrop";
 
 const SUPPORT_EMAIL = "support@yourdomain.com"; // <-- change this
 

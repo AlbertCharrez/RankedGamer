@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchMatchMetadata, fetchSteamNames, toAccountId, TEAMS, teamIndex, isWin } from "../Data/deadlock";
+import { fetchMatchMetadata, fetchSteamNames, toAccountId, TEAMS, teamIndex, isWin } from "../deadlock/deadlock";
 
 const clock = (s = 0) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 
@@ -39,7 +39,6 @@ export default function MatchSpotlight({ steamId, match, heroes }) {
   if (state.status === "loading") {
     return <div className="spotlight"><p className="muted spotlight-loading">Loading match details...</p></div>;
   }
-
   if (state.status === "error") {
     return <div className="spotlight"><p className="form-error spotlight-loading">{state.message}</p></div>;
   }
@@ -69,7 +68,6 @@ export default function MatchSpotlight({ steamId, match, heroes }) {
 
   return (
     <div className="spotlight">
-      {/* banner */}
       <div
         className="spotlight-banner"
         style={{
@@ -93,13 +91,14 @@ export default function MatchSpotlight({ steamId, match, heroes }) {
             <span title="Net worth: value of items held plus unspent souls">Souls</span>
           </div>
           <div>
-            <strong>{me.kills ?? match.player_kills ?? 0} / {me.deaths ?? match.player_deaths ?? 0} / {me.assists ?? match.player_assists ?? 0}</strong>
+            <strong>
+              {me.kills ?? match.player_kills ?? 0} / {me.deaths ?? match.player_deaths ?? 0} / {me.assists ?? match.player_assists ?? 0}
+            </strong>
             <span>K / D / A</span>
           </div>
         </div>
       </div>
 
-      {/* death timeline */}
       <div className="spotlight-body">
         <p className="stats-caption">
           Deaths · {deaths.length} total · {deathsPer10} per 10 min

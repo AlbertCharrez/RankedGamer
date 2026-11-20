@@ -1,7 +1,7 @@
 import { useState } from "react";
-import ModalBackdrop from "./ModalBackdrop";
-import GamePicker from "./GamePicker";
-import { isUsernameTaken, signUp, USERNAME_RE } from "../Data/accounts";
+import ModalBackdrop from "../../components/ModalBackdrop";
+import GamePicker from "../../features/games/GamePicker";
+import { isUsernameTaken, signUp, USERNAME_RE } from "../profile/accounts";
 
 function friendlyError(err) {
   const msg = err?.message ?? "";

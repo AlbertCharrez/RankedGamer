@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { games } from "../Data/games";
-import DeadlockStats from "./DeadlockStats";
-import RankComparison from "./RankComparison";
+import { games } from "../games/games";
+import DeadlockPanel from "../deadlock/DeadlockPanel";
 
 export default function ProfileGameStats({ user, isOwn, onLinkAccounts }) {
   const myGames = games.filter((g) => user.games.includes(g.id));
@@ -31,12 +30,7 @@ export default function ProfileGameStats({ user, isOwn, onLinkAccounts }) {
       </div>
     );
   } else if (game.id === "deadlock") {
-    panel = (
-      <>
-        <DeadlockStats steamId={user.steamId} recentCount={5} />
-        <RankComparison steamId={user.steamId} />
-      </>
-    );
+    panel = <DeadlockPanel steamId={user.steamId} recentCount={5} />;
   } else {
     panel = <div className="stats-card muted">{game.name} stats are coming soon.</div>;
   }
